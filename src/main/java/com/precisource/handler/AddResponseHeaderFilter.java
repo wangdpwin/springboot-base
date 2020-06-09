@@ -51,12 +51,12 @@ public class AddResponseHeaderFilter extends OncePerRequestFilter {
 
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             httpServletResponse.setHeader("Access-Control-Allow-Headers",
-                    "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count");
+                    "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count, X-Sample-Count");
             httpServletResponse.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, PUT, DELETE");
             httpServletResponse.setHeader("Access-Control-Max-Age", "86400");
         } else {
             httpServletResponse.setHeader("Access-Control-Expose-Headers",
-                    "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count");
+                    "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count, X-Sample-Count");
         }
 
         filterChain.doFilter(request, httpServletResponse);
