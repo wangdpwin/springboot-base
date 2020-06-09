@@ -4,10 +4,21 @@ import com.precisource.consts.ErrorCode;
 import com.precisource.exception.BaseException;
 import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BaseController {
+
+    @Autowired
+    private ThreadLocal<HttpServletResponse> threadLocal;
+
+    protected void setTotalCount(long totalCount) {
+        threadLocal.get().setHeader("x-totalCount",String.valueOf(totalCount));
+    }
 
     /**
      * Send a 200 OK response

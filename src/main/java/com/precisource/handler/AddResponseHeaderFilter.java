@@ -1,6 +1,7 @@
 package com.precisource.handler;
 
 import com.precisource.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,9 +18,13 @@ import java.io.IOException;
 @Component
 public class AddResponseHeaderFilter extends OncePerRequestFilter {
 
+    @Autowired
+    private ThreadLocal<HttpServletResponse> threadLocal;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
+        threadLocal.set(httpServletResponse);
         String defaultContentType = "application/json; charset=utf-8";
         //set default content type
         httpServletResponse.setContentType(defaultContentType);
