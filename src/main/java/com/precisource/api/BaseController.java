@@ -6,7 +6,6 @@ import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,18 @@ public class BaseController {
     private ThreadLocal<HttpServletResponse> threadLocal;
 
     protected void setTotalCount(long totalCount) {
-        threadLocal.get().setHeader("x-totalCount",String.valueOf(totalCount));
+        threadLocal.get().setHeader("X-Total-Count",String.valueOf(totalCount));
+        threadLocal.remove();
+    }
+
+    protected void setTotalCount(String headerName, long totalCount) {
+        threadLocal.get().setHeader(headerName,String.valueOf(totalCount));
+        threadLocal.remove();
+    }
+
+    protected void setHeader(String headerName, String value) {
+        threadLocal.get().setHeader(headerName,value);
+        threadLocal.remove();
     }
 
     /**
@@ -88,15 +98,36 @@ public class BaseController {
     /**
      * Send 401 Unauthorized
      */
-    protected static void unauthorized(String message) {
+    public static void unauthorized(String message) {
         throw new BaseException(HttpStatus.UNAUTHORIZED, ErrorCode.CLIENT_AUTH_ERROR, message);
     }
 
     /**
      * Send 401 Unauthorized
      */
-    protected static void unauthorized() {
+    public static void unauthorized() {
         throw new BaseException(HttpStatus.UNAUTHORIZED, ErrorCode.CLIENT_AUTH_ERROR);
+    }
+
+    /**
+     * Send 403 forbidden
+     */
+    public static void forbidden() {
+        throw new BaseException(HttpStatus.FORBIDDEN, ErrorCode.CLIENT_ACCESS_DENIED);
+    }
+
+    /**
+     * Send 403 forbidden
+     */
+    public static void forbidden(String message) {
+        throw new BaseException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, ErrorCode.CLIENT_OVER_QUOTA, message);
+    }
+
+    /**
+     * Send 403 forbidden
+     */
+    public static void forbidden(java.lang.Error error) {
+        forbidden(JsonUtils.toJsonString(error));
     }
 
     /**
@@ -153,12 +184,10 @@ public class BaseController {
     }
 
     /**
-     * set total count header.
-     *
-     * @param totalCount
+     * Send 509 CLIENT_OVER_QUOTA
      */
-    protected static void setTotalCount(Object totalCount) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Total-Count", String.valueOf(totalCount));
+    public static void limitExceeded(String message) {
+        throw new BaseException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, ErrorCode.CLIENT_OVER_QUOTA, message);
     }
+
 }
