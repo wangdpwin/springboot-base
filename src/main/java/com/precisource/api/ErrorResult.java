@@ -1,27 +1,27 @@
-package com.precisource.pojo;
+package com.precisource.api;
 
 /**
  * @Author: xinput
  * @Date: 2020-06-06 14:37
  */
-public class Result {
+public class ErrorResult {
 
     private Integer code;
 
     private String message;
 
-    public Result() {
+    public ErrorResult() {
     }
 
-    public Result(Integer code) {
+    public ErrorResult(Integer code) {
         this.code = code;
     }
 
-    public Result(String message) {
+    public ErrorResult(String message) {
         this.message = message;
     }
 
-    public Result(Integer code, String message) {
+    public ErrorResult(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -44,7 +44,7 @@ public class Result {
 
     @Override
     public String toString() {
-        return "Result{" +
+        return "ErrorResult{" +
                 "code=" + code +
                 ", message='" + message + '\'' +
                 '}';

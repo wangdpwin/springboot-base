@@ -4,20 +4,16 @@ import com.precisource.consts.ErrorCode;
 import com.precisource.exception.BaseException;
 import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 public class BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
-
     /**
      * Send a 200 OK response
      */
     protected static void ok() {
-        throw new BaseException(HttpStatus.CREATED);
+        throw new BaseException(HttpStatus.OK);
     }
 
     /**
