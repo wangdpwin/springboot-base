@@ -3,7 +3,7 @@ package com.precisource.config;
 import com.bleach.Logs;
 import com.bleach.common.StringUtils;
 import com.bleach.file.SimpleProperties;
-import org.apache.commons.compress.utils.Lists;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
