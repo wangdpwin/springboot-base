@@ -1,33 +1,70 @@
 package com.precisource.api;
 
-import com.precisource.consts.ErrorCode;
-import com.precisource.exception.BaseException;
-import com.precisource.util.JsonUtils;
-import com.precisource.util.StringUtils;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bleach.common.JsonUtils;
+import com.bleach.common.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
-@Component
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
+/**
+ * setTotalCount(long totalCount)
+ * setTotalCount(String headerName, long totalCount)
+ * setHeader(String headerName, String value)
+ * setHeader(List<Header> headers)
+ * 这四个方法在一个Mapping中只能调用一次
+ */
 public class BaseController {
 
-    @Autowired
-    private ThreadLocal<HttpServletResponse> threadLocal;
+    /**
+     * ThreadLocal确保高并发下每个请求的request，response都是独立的
+     */
+    private static ThreadLocal<HttpServletResponse> currentResponse = new ThreadLocal();
 
+    /**
+     * 线程安全初始化reque，respose对象
+     */
+    @ModelAttribute
+    public void initReqAndRep(HttpServletResponse response) {
+        currentResponse.set(response);
+    }
+
+
+    /**
+     * 在response的header中添加X-Total-Count
+     */
     protected void setTotalCount(long totalCount) {
-        threadLocal.get().setHeader("X-Total-Count",String.valueOf(totalCount));
-        threadLocal.remove();
+        HttpServletResponse response = currentResponse.get();
+        response.setHeader("X-Total-Count", String.valueOf(totalCount));
+        currentResponse.remove();
     }
 
+    /**
+     * 在response的header中添加 headerName
+     */
     protected void setTotalCount(String headerName, long totalCount) {
-        threadLocal.get().setHeader(headerName,String.valueOf(totalCount));
-        threadLocal.remove();
+        HttpServletResponse response = currentResponse.get();
+        response.setHeader(headerName, String.valueOf(totalCount));
+        currentResponse.remove();
     }
 
+    /**
+     * 在response的header中添加 headerName
+     */
     protected void setHeader(String headerName, String value) {
-        threadLocal.get().setHeader(headerName,value);
-        threadLocal.remove();
+        HttpServletResponse response = currentResponse.get();
+        response.setHeader(headerName, value);
+        currentResponse.remove();
+    }
+
+    protected void setHeader(List<Header> headers) {
+        HttpServletResponse response = currentResponse.get();
+        if (CollectionUtils.isEmpty(headers)) {
+            headers.forEach(header -> response.setHeader(header.getName(), String.valueOf(header.getValue())));
+        }
+        currentResponse.remove();
     }
 
     /**

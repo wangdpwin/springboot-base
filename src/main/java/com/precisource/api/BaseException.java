@@ -1,4 +1,4 @@
-package com.precisource.exception;
+package com.precisource.api;
 
 import org.springframework.http.HttpStatus;
 

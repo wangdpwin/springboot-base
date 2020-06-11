@@ -1,8 +1,8 @@
 package com.precisource.handler;
 
-import com.precisource.api.ErrorResult;
-import com.precisource.consts.ErrorCode;
-import com.precisource.exception.BaseException;
+import com.precisource.api.BaseException;
+import com.precisource.api.ErrorCode;
+import com.precisource.api.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(value = BaseException.class)
-    public ResponseEntity<ErrorResult> baseExceptionHandler(BaseException be) {
+    public ResponseEntity<Result> baseExceptionHandler(BaseException be) {
         ResponseEntity responseEntity;
         switch (be.getHttpStatus()) {
             case OK:
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
                 responseEntity = ResponseEntity.status(be.getHttpStatus()).body(be.getMessage());
                 break;
             default:
-                ErrorResult errorResult = new ErrorResult(be.getCode(), be.getMessage());
+                Result errorResult = new Result(be.getCode(), be.getMessage());
                 responseEntity = ResponseEntity.status(be.getHttpStatus()).body(errorResult);
                 break;
         }
@@ -44,17 +44,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<ErrorResult> nullPointerExceptionHandler(HttpServletRequest req, NullPointerException npe) {
+    public ResponseEntity<Result> nullPointerExceptionHandler(HttpServletRequest req, NullPointerException npe) {
         logger.error("{} {} NullPointerException. ", req.getMethod(), req.getRequestURI(), npe);
-        ErrorResult errorResult = new ErrorResult(ErrorCode.SERVER_INTERNAL_ERROR, npe.getMessage());
+        Result errorResult = new Result(ErrorCode.SERVER_INTERNAL_ERROR, npe.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResult> exceptionHandler(HttpServletRequest req, Exception e) {
+    public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, Exception e) {
         logger.error("{} {} Exception. ", req.getMethod(), req.getRequestURI(), e);
-        ErrorResult errorResult = new ErrorResult(ErrorCode.SERVER_INTERNAL_ERROR, e.getMessage());
+        Result errorResult = new Result(ErrorCode.SERVER_INTERNAL_ERROR, e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
     }
 }

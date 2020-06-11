@@ -1,6 +1,4 @@
-package com.precisource.consts;
-
-import com.precisource.api.Remark;
+package com.precisource.api;
 
 import java.lang.reflect.Field;
 import java.util.Hashtable;
@@ -15,10 +13,10 @@ public final class ErrorCode {
     /**
      * generic code
      */
-    @Remark(remark = "未知错误")
+    @Remark("未知错误")
     public static final int UNKNOWN = -1;
 
-    @Remark(remark = "成功")
+    @Remark("成功")
     public static final int SUCCESS = 0;
 
     /*
@@ -28,51 +26,51 @@ public final class ErrorCode {
     /**
      * 消息格式错误
      */
-    @Remark(remark = "消息格式错误")
+    @Remark("消息格式错误")
     public static final int CLIENT_FORMAT_ERROR = 1100;
 
     /**
      * 身份验证失败
      */
-    @Remark(remark = "身份验证失败")
+    @Remark("身份验证失败")
     public static final int CLIENT_AUTH_ERROR = 1200;
 
-    @Remark(remark = "身份令牌过期")
+    @Remark("身份令牌过期")
     public static final int CLIENT_AUTH_TOKEN_EXPIRED = 1210;
     /**
      * 操作超时
      */
-    @Remark(remark = "操作超时")
+    @Remark("操作超时")
     public static final int CLIENT_TIMEOUT = 1300;
 
     /**
      * 访问被拒绝
      */
-    @Remark(remark = "访问被拒绝")
+    @Remark("访问被拒绝")
     public static final int CLIENT_ACCESS_DENIED = 1400;
 
     /**
      * 客户端超时退出
      */
-    @Remark(remark = "客户端超时退出")
+    @Remark("客户端超时退出")
     public static final int CLIENT_TIMEOUT_LOCKED = 1500;
 
     /**
      * 找不到资源
      */
-    @Remark(remark = "找不到资源")
+    @Remark("找不到资源")
     public static final int CLIENT_RESOURCE_NOT_FOUND = 2100;
 
     /**
      * 余额不足
      */
-    @Remark(remark = "余额不足")
+    @Remark("余额不足")
     public static final int CLIENT_CREDIT_LOWER_LIMIT = 2400;
 
     /**
      * 超过配额
      */
-    @Remark(remark = "超过配额")
+    @Remark("超过配额")
     public static final int CLIENT_OVER_QUOTA = 2500;
 
     /*
@@ -81,25 +79,25 @@ public final class ErrorCode {
     /**
      * 服务器内部错误
      */
-    @Remark(remark = "内部错误")
+    @Remark("内部错误")
     public static final int SERVER_INTERNAL_ERROR = 5000;
 
     /**
      * 服务器繁忙
      */
-    @Remark(remark = "服务器繁忙")
+    @Remark("服务器繁忙")
     public static final int SERVER_BUSY = 5100;
 
     /**
      * 资源不足
      */
-    @Remark(remark = "资源不足")
+    @Remark("资源不足")
     public static final int SERVER_RESOURCE_LIMIT = 5200;
 
     /**
      * 服务更新中
      */
-    @Remark(remark = "服务更新中")
+    @Remark("服务更新中")
     public static final int SERVER_UPDATE = 5300;
 
     static final Hashtable<Integer, String> codeMsgMap = new Hashtable<>(
@@ -111,7 +109,7 @@ public final class ErrorCode {
             if (field.isAnnotationPresent(Remark.class)) {
                 try {
                     codeMsgMap.put(field.getInt(null),
-                            field.getAnnotation(Remark.class).remark());
+                            field.getAnnotation(Remark.class).value());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();
                 }

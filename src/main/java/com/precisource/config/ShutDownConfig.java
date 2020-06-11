@@ -1,6 +1,6 @@
 package com.precisource.config;
 
-import com.precisource.api.TerminateBean;
+import com.precisource.bean.TerminateBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
