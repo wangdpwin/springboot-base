@@ -6,8 +6,7 @@ import com.bleach.common.StringUtils;
 import com.precisource.api.HeaderEnum;
 import com.precisource.config.SystemConfig;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -26,15 +25,19 @@ import java.util.List;
 @Component
 public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseHandlerInterceptor.class);
-
     private static String DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS = "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count";
+
+    @Autowired
+    private ThreadLocal<HttpServletResponse> threadLocal;
 
     /**
      * 请求处理之前
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        threadLocal.set(response);
+
         String requestId = (String) request.getAttribute(HeaderEnum.REQUEST_ID.getType());
         if (StringUtils.isNotEmpty(requestId)) {
             requestId = new StringBuffer(20).append(ObjectId.get().toString()).append("-").append(requestId).toString();
@@ -42,7 +45,6 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
             requestId = ObjectId.get().toString();
         }
         request.setAttribute(HeaderEnum.REQUEST_ID.getType(), requestId);
-        logger.info("request 中生成的 reqeustId = {}", requestId);
 
         String defaultContentType = "application/json; charset=utf-8";
         //set default content type
@@ -82,11 +84,20 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
+    /**
+     * 请求处理之后进行调用，但是在视图被渲染之前（Controller方法调用之后），如果异常发生，则该方法不会被调用
+     *
+     * @param request
+     * @param response
+     * @param handler
+     * @param modelAndView
+     * @throws Exception
+     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        String requestId = (String) request.getAttribute(HeaderEnum.REQUEST_ID.getType());
-        logger.info("请求处理之后进行调用，但是在视图被渲染之前（Controller方法调用之后），如果异常发生，则该方法不会被调用");
-        logger.info("requestId = " + requestId);
+        // 清空Tomcat创建的大量session对象
+        request.getSession().invalidate();
+        threadLocal.remove();
     }
 
     @Override

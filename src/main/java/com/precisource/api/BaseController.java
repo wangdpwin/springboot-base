@@ -2,9 +2,10 @@ package com.precisource.api;
 
 import com.bleach.common.JsonUtils;
 import com.bleach.common.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -16,55 +17,47 @@ import java.util.List;
  * setHeader(List<Header> headers)
  * 这四个方法在一个Mapping中只能调用一次
  */
+@Component
 public class BaseController {
 
-    /**
-     * ThreadLocal确保高并发下每个请求的request，response都是独立的
-     */
-    private ThreadLocal<HttpServletResponse> currentResponse = new ThreadLocal();
+    @Autowired
+    private ThreadLocal<HttpServletResponse> threadLocal;
 
     /**
      * 线程安全初始化reque，respose对象
      */
-    @ModelAttribute
-    public void initReqAndRep(HttpServletResponse response) {
-        currentResponse.set(response);
-    }
-
+//    @ModelAttribute
+//    public void initReqAndRep(HttpServletResponse response) {
+//        currentResponse.set(response);
+//    }
 
     /**
      * 在response的header中添加X-Total-Count
      */
     protected void setTotalCount(long totalCount) {
-        HttpServletResponse response = currentResponse.get();
-        response.setHeader("X-Total-Count", String.valueOf(totalCount));
-        currentResponse.remove();
+        setTotalCount("X-Total-Count", totalCount);
     }
 
     /**
      * 在response的header中添加 headerName
      */
     protected void setTotalCount(String headerName, long totalCount) {
-        HttpServletResponse response = currentResponse.get();
-        response.setHeader(headerName, String.valueOf(totalCount));
-        currentResponse.remove();
+        setHeader(headerName, String.valueOf(totalCount));
     }
 
     /**
      * 在response的header中添加 headerName
      */
     protected void setHeader(String headerName, String value) {
-        HttpServletResponse response = currentResponse.get();
+        HttpServletResponse response = threadLocal.get();
         response.setHeader(headerName, value);
-        currentResponse.remove();
     }
 
     protected void setHeader(List<Header> headers) {
-        HttpServletResponse response = currentResponse.get();
+        HttpServletResponse response = threadLocal.get();
         if (CollectionUtils.isEmpty(headers)) {
             headers.forEach(header -> response.setHeader(header.getName(), String.valueOf(header.getValue())));
         }
-        currentResponse.remove();
     }
 
     /**
