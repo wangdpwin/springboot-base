@@ -10,22 +10,6 @@ public class Result {
 
     private String message;
 
-    public Result() {
-    }
-
-    public Result(Integer code) {
-        this.code = code;
-    }
-
-    public Result(String message) {
-        this.message = message;
-    }
-
-    public Result(Integer code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
     public Integer getCode() {
         return code;
     }
