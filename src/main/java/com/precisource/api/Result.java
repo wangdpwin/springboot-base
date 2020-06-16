@@ -26,6 +26,11 @@ public class Result {
         this.message = message;
     }
 
+    public void setCodeWithDefaultMsg(int code) {
+        this.code = code;
+        this.message = ErrorCode.getMsg(code);
+    }
+
     @Override
     public String toString() {
         return "Result{" +

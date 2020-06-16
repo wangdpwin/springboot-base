@@ -2,34 +2,46 @@ package com.precisource.api;
 
 import com.bleach.common.JsonUtils;
 import com.bleach.common.StringUtils;
+import com.bleach.date.TimeUtils;
+import com.precisource.bean.BaseHttp;
+import com.precisource.config.DefaultConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * setTotalCount(long totalCount)
- * setTotalCount(String headerName, long totalCount)
- * setHeader(String headerName, String value)
- * setHeader(List<Header> headers)
- * 这四个方法在一个Mapping中只能调用一次
+ *
  */
 @Component
 public class BaseController {
 
     @Autowired
-    private ThreadLocal<HttpServletResponse> threadLocal;
+    private ThreadLocal<BaseHttp> baseHttpThreadLocal;
 
     /**
-     * 线程安全初始化reque，respose对象
+     * 线程安全初始化 request，respose对象
      */
 //    @ModelAttribute
 //    public void initReqAndRep(HttpServletResponse response) {
 //        currentResponse.set(response);
 //    }
+
+    /**
+     * get user id in jwt token.
+     *
+     * @return
+     */
+    protected String currentUserId() {
+        if (StringUtils.equalsIgnoreCase(DefaultConfig.DEFAULT_MODE, DefaultConfig.getMode())) {
+            return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
+        }
+        return DefaultConfig.getMockUserId();
+    }
 
     /**
      * 在response的header中添加X-Total-Count
@@ -49,15 +61,31 @@ public class BaseController {
      * 在response的header中添加 headerName
      */
     protected void setHeader(String headerName, String value) {
-        HttpServletResponse response = threadLocal.get();
+        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
         response.setHeader(headerName, value);
     }
 
     protected void setHeader(List<Header> headers) {
-        HttpServletResponse response = threadLocal.get();
+        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
         if (CollectionUtils.isEmpty(headers)) {
             headers.forEach(header -> response.setHeader(header.getName(), String.valueOf(header.getValue())));
         }
+    }
+
+    /**
+     * set jwt token cookie with httpOnly and secure deps on your 'application.session.secure' setting.
+     *
+     * @param jwt
+     * @param duration like 2h, 3d
+     */
+    protected void setJWTCookie(String jwt, String duration) {
+        Cookie cookie = new Cookie(DefaultConfig.getCookieTokenName(), jwt);
+        cookie.setPath(StringUtils.SLASH);
+        cookie.setSecure(DefaultConfig.getCookieSecure());
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(TimeUtils.parseDuration(duration));
+
+        baseHttpThreadLocal.get().getResponsen().addCookie(cookie);
     }
 
     /**
@@ -114,15 +142,15 @@ public class BaseController {
     /**
      * Send 400 bad request
      */
-    protected void badRequest(java.lang.Error error) {
-        badRequest(JsonUtils.toJsonString(error));
+    protected void badRequest(Result result) {
+        throw new BaseException(HttpStatus.BAD_REQUEST, result.getCode(), result.getMessage());
     }
 
     /**
      * Send 401 Unauthorized
      */
-    protected void unauthorized(java.lang.Error error) {
-        unauthorized(JsonUtils.toJsonString(error));
+    protected void unauthorized(Result result) {
+        throw new BaseException(HttpStatus.UNAUTHORIZED, result.getCode(), result.getMessage());
     }
 
     /**
@@ -156,8 +184,9 @@ public class BaseController {
     /**
      * Send 403 forbidden
      */
-    public void forbidden(java.lang.Error error) {
-        forbidden(JsonUtils.toJsonString(error));
+    public void forbidden(Result result) {
+        throw new BaseException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, result.getCode(), result.getMessage());
+
     }
 
     /**
@@ -209,8 +238,9 @@ public class BaseController {
     /**
      * Send 500 INTERNAL_SERVER_ERROR
      */
-    protected void error(java.lang.Error error) {
-        error(JsonUtils.toJsonString(error));
+    protected void error(Result result) {
+        throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, result.getCode(), result.getMessage());
+
     }
 
     /**

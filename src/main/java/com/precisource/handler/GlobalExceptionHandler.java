@@ -5,6 +5,7 @@ import com.bleach.common.StringUtils;
 import com.precisource.api.BaseException;
 import com.precisource.api.ErrorCode;
 import com.precisource.api.Result;
+import com.precisource.bean.BaseHttp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,135 +34,149 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @Autowired
-    private ThreadLocal<HttpServletResponse> threadLocal;
-
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<Result> globalExceptionHandler(HttpServletRequest req, HttpServletResponse resp, Exception e) {
-        ResponseEntity responseEntity;
-        if (e instanceof ConstraintViolationException) {
-            responseEntity = constraintViolationExceptionHandler(req, (ConstraintViolationException) e);
-        } else if (e instanceof MethodArgumentNotValidException) {
-            responseEntity = methodArgumentNotValidException((MethodArgumentNotValidException) e);
-        } else if (e instanceof HttpMessageNotReadableException) {
-            responseEntity = httpMessageNotReadableExceptionHandler((HttpMessageNotReadableException) e);
-        } else if (e instanceof BaseException) {
-            responseEntity = baseExceptionHandler((BaseException) e);
-        } else if (e instanceof NullPointerException) {
-            responseEntity = nullPointerExceptionHandler(req, (NullPointerException) e);
-        } else {
-            responseEntity = exceptionHandler(req, e);
-        }
-
-        threadLocal.remove();
-        return responseEntity;
-    }
+    private ThreadLocal<BaseHttp> baseHttpThreadLocal;
 
     /**
      * 参数类型验证错误，http返回状态默认400
      *
      * @param req
-     * @param cve
+     * @param resp
+     * @param e
      * @return
      */
-    private ResponseEntity<Result> constraintViolationExceptionHandler(HttpServletRequest req, ConstraintViolationException cve) {
-        logger.error("{} {} ConstraintViolationException. ", req.getMethod(), req.getRequestURI(), cve);
-        String detailMessage = cve.getMessage();
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<Result> constraintViolationExceptionHandler(HttpServletRequest req, HttpServletResponse resp, ConstraintViolationException e) {
+        logger.error("{} {} ConstraintViolationException. ", req.getMethod(), req.getRequestURI(), e);
+        String detailMessage = e.getMessage();
         if (detailMessage.contains(StringUtils.COLON)) {
             detailMessage = detailMessage.substring(detailMessage.indexOf(StringUtils.COLON) + 1);
         }
-        Result errorResult = BuilderUtils.of(Result::new)
+        Result result = BuilderUtils.of(Result::new)
                 .with(Result::setCode, ErrorCode.CLIENT_FORMAT_ERROR)
                 .with(Result::setMessage, detailMessage)
                 .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResult);
-    }
 
-    private ResponseEntity<Result> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException cve) {
-        String detailMessage = cve.getMessage();
-        if (detailMessage.contains(StringUtils.COLON)) {
-            detailMessage = detailMessage.substring(0, detailMessage.indexOf(StringUtils.COLON));
-        }
-        Result errorResult = BuilderUtils.of(Result::new)
-                .with(Result::setCode, ErrorCode.CLIENT_FORMAT_ERROR)
-                .with(Result::setMessage, detailMessage)
-                .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResult);
+        clear(req);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(result);
     }
 
     /**
-     * 使用 Validator 验证参数，在spring-boot-starter-web下自带
+     * 方法内参数验证异常
      *
-     * @param validException
+     * @param req
+     * @param resp
+     * @param e
      * @return
      */
-    public ResponseEntity<Result> methodArgumentNotValidException(MethodArgumentNotValidException validException) {
-        List<ObjectError> errors = validException.getBindingResult().getAllErrors();
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<Result> methodArgumentNotValidException(HttpServletRequest req, HttpServletResponse resp, MethodArgumentNotValidException e) {
+        List<ObjectError> errors = e.getBindingResult().getAllErrors();
         StringBuffer errorMsg = new StringBuffer();
         errors.stream().forEach(x -> errorMsg.append(x.getDefaultMessage()).append(";"));
-        Result errorResult = BuilderUtils.of(Result::new)
+        Result result = BuilderUtils.of(Result::new)
                 .with(Result::setCode, ErrorCode.CLIENT_FORMAT_ERROR)
                 .with(Result::setMessage, errorMsg.toString())
                 .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResult);
+
+        clear(req);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(result);
     }
 
     /**
-     * 特殊异常的处理
+     * 调用方在以post json方式请求服务时，没有对参数进行json序列化所抛出的异常
+     * 即： Controller中的方法有 @ResponseBody 参数验证时，如果传入的是个空数据则会抛出这个异常
      *
-     * @param baseException
+     * @param e
      * @return
      */
-    private ResponseEntity<Result> baseExceptionHandler(BaseException baseException) {
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<Result> httpMessageNotReadableExceptionHandler(HttpServletRequest req, HttpServletResponse resp, HttpMessageNotReadableException e) {
+        String detailMessage = e.getMessage();
+        if (detailMessage.contains(StringUtils.COLON)) {
+            detailMessage = detailMessage.substring(0, detailMessage.indexOf(StringUtils.COLON));
+        }
+        Result result = BuilderUtils.of(Result::new)
+                .with(Result::setCode, ErrorCode.CLIENT_FORMAT_ERROR)
+                .with(Result::setMessage, detailMessage)
+                .build();
+
+        clear(req);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(result);
+    }
+
+    /**
+     * 自己封装的基础异常
+     *
+     * @param req
+     * @param resp
+     * @param be   封装的异常
+     * @return
+     */
+    @ExceptionHandler(value = BaseException.class)
+    public ResponseEntity<Result> baseExceptionHandler(HttpServletRequest req, HttpServletResponse resp, BaseException be) {
         ResponseEntity responseEntity;
-        switch (baseException.getHttpStatus()) {
+        switch (be.getHttpStatus()) {
             case OK:
                 responseEntity = ResponseEntity.status(HttpStatus.OK).build();
                 break;
             case CREATED:
             case NO_CONTENT:
-                responseEntity = ResponseEntity.status(baseException.getHttpStatus()).body(baseException.getMessage());
+                responseEntity = ResponseEntity.status(be.getHttpStatus()).body(be.getMessage());
                 break;
             default:
-                Result errorResult = BuilderUtils.of(Result::new)
-                        .with(Result::setCode, baseException.getCode())
-                        .with(Result::setMessage, baseException.getMessage())
+                Result result = BuilderUtils.of(Result::new)
+                        .with(Result::setCode, be.getCode())
+                        .with(Result::setMessage, be.getMessage())
                         .build();
-                responseEntity = ResponseEntity.status(baseException.getHttpStatus()).body(errorResult);
+                responseEntity = ResponseEntity.status(be.getHttpStatus()).body(result);
                 break;
         }
 
+        clear(req);
         return responseEntity;
     }
 
-    /**
-     * 空指针异常
-     *
-     * @param req
-     * @param npe
-     * @return
-     */
-    private ResponseEntity<Result> nullPointerExceptionHandler(HttpServletRequest req, NullPointerException npe) {
+    @ExceptionHandler(value = NullPointerException.class)
+    public ResponseEntity<Result> nullPointExceptionHandler(HttpServletRequest req, HttpServletResponse resp, NullPointerException npe) {
         logger.error("{} {} NullPointerException. ", req.getMethod(), req.getRequestURI(), npe);
-        Result errorResult = BuilderUtils.of(Result::new)
+        Result result = BuilderUtils.of(Result::new)
                 .with(Result::setCode, ErrorCode.SERVER_INTERNAL_ERROR)
                 .with(Result::setMessage, npe.getMessage())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
+
+        clear(req);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
 
+
     /**
-     * 其他异常
+     * 所有未被包含的异常
      *
      * @param req
+     * @param resp
      * @param e
      * @return
      */
-    private ResponseEntity<Result> exceptionHandler(HttpServletRequest req, Exception e) {
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, HttpServletResponse resp, Exception e) {
         logger.error("{} {} Exception. ", req.getMethod(), req.getRequestURI(), e);
-        Result errorResult = BuilderUtils.of(Result::new)
+        Result result = BuilderUtils.of(Result::new)
                 .with(Result::setCode, ErrorCode.SERVER_INTERNAL_ERROR)
                 .with(Result::setMessage, e.getMessage())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
+
+        clear(req);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
+
+    /**
+     * 资源释放
+     *
+     * @param req
+     */
+    private void clear(HttpServletRequest req) {
+        req.getSession().invalidate();
+        baseHttpThreadLocal.remove();
+    }
+
 }
