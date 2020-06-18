@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class JwtUtils {
 
-    public static String secret = DefaultConsts.get("application.secret");
+    public static String secret = DefaultConsts.get("application.secret", "xinput.precisource.com");
 
     public static String tokenExp = DefaultConsts.get("token.exp", "3600");
 

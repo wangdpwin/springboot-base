@@ -2,36 +2,109 @@ package com.precisource.api;
 
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
+import com.precisource.consts.HeaderEnum;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
+import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
-import com.precisource.util.TimeUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
-@Service
-public abstract class BaseService {
+@Component
+public abstract class BaseController {
 
     @Autowired
     private ThreadLocal<BaseHttp> baseHttpThreadLocal;
 
     /**
-     * set jwt token cookie with httpOnly and secure deps on your 'application.session.secure' setting.
-     *
-     * @param jwt
-     * @param duration like 2h, 3d
+     * 线程安全初始化 request，respose对象
      */
-    protected void setJWTCookie(String jwt, String duration) {
-        Cookie cookie = new Cookie(DefaultConsts.getCookieTokenName(), jwt);
-        cookie.setPath(StringUtils.SLASH);
-        cookie.setSecure(DefaultConsts.getCookieSecure());
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(TimeUtils.parseDuration(duration));
+//    @ModelAttribute
+//    public void initReqAndRep(HttpServletResponse response) {
+//        currentResponse.set(response);
+//    }
 
-        baseHttpThreadLocal.get().getResponsen().addCookie(cookie);
+    /**
+     * get user id in jwt token.
+     *
+     * @return
+     */
+    protected String currentUserId() {
+        if (StringUtils.equalsIgnoreCase(DefaultConsts.DEFAULT_MODE, DefaultConsts.getMode())) {
+            return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
+        }
+        return DefaultConsts.getMockUserId();
+    }
+
+    /**
+     * 在response的header中添加X-Total-Count
+     */
+    protected void setTotalCount(long totalCount) {
+        setTotalCount(HeaderEnum.TOTOL_COUNT.getType(), totalCount);
+    }
+
+    /**
+     * 在response的header中添加 headerName
+     */
+    protected void setTotalCount(String headerName, long totalCount) {
+        setHeader(headerName, String.valueOf(totalCount));
+    }
+
+    /**
+     * 在response的header中添加 headerName
+     */
+    protected void setHeader(String headerName, String value) {
+        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+        response.setHeader(headerName, value);
+    }
+
+    protected void setHeader(List<Header> headers) {
+        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+        if (CollectionUtils.isEmpty(headers)) {
+            headers.forEach(header -> response.setHeader(header.getName(), String.valueOf(header.getValue())));
+        }
+    }
+
+    /**
+     * set total count header to 0 and render empty list.
+     */
+    protected void renderEmptyList() {
+        baseHttpThreadLocal.get().getResponsen().setHeader(HeaderEnum.TOTOL_COUNT.getType(), "0");
+        throw new BaseException(HttpStatus.OK, JsonUtils.toJsonString(Lists.newArrayList()));
+    }
+
+    /**
+     * Send a 200 OK response
+     */
+    protected void ok() {
+        throw new BaseException(HttpStatus.OK);
+    }
+
+    /**
+     * Send 201 Created
+     */
+    protected void created(Object data) {
+        created(JsonUtils.toJsonString(data));
+    }
+
+    /**
+     * Send 201 Created
+     */
+    protected void created(String message) {
+        throw new BaseException(HttpStatus.CREATED, message);
+    }
+
+    /**
+     * Send 204 NO CONTENT
+     */
+    protected void noContent() {
+        throw new BaseException(HttpStatus.NO_CONTENT);
     }
 
     /**
