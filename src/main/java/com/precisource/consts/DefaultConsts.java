@@ -97,7 +97,7 @@ public class DefaultConsts {
      */
     public static final String get(String key, String defaultValue) {
         if (SP == null) {
-            return StringUtils.EMPTY;
+            return defaultValue;
         }
 
         return SP.getStringProperty(key, defaultValue);
@@ -109,7 +109,7 @@ public class DefaultConsts {
 
     public static final boolean getBoolean(String key, boolean defaultValue) {
         if (SP == null) {
-            return Boolean.FALSE;
+            return defaultValue;
         }
 
         return SP.getBooleanProperty(key, defaultValue);
