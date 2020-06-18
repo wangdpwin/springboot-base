@@ -1,4 +1,6 @@
-package com.precisource.api;
+package com.precisource.consts;
+
+import com.precisource.annotation.Remark;
 
 import java.lang.reflect.Field;
 import java.util.Hashtable;

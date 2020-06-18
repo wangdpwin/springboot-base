@@ -2,7 +2,7 @@ package com.precisource.model;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.precisource.consts.Consts;
+import com.precisource.consts.BaseConsts;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ public class BaseModel {
     @TableId
     private String id;
 
-    private Integer recordState = Consts.RECORD_STATE_VALID;
+    private Integer recordState = BaseConsts.RECORD_STATE_VALID;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime = new Date();

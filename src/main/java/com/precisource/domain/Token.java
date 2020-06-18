@@ -1,4 +1,4 @@
-package com.precisource.bean;
+package com.precisource.domain;
 
 import javax.validation.constraints.NotNull;
 

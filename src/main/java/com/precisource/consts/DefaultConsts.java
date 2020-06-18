@@ -1,8 +1,8 @@
-package com.precisource.config;
+package com.precisource.consts;
 
-import com.bleach.common.StringUtils;
-import com.bleach.file.SimpleProperties;
 import com.google.common.collect.Lists;
+import com.precisource.util.SimpleProperties;
+import com.precisource.util.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  * @Author: xinput
  * @Date: 2020-06-10 21:48
  */
-public class DefaultConfig {
+public class DefaultConsts {
 
     public static final String DEFAULT_MODE = "prod";
 

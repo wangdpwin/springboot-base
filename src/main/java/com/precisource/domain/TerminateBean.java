@@ -1,4 +1,4 @@
-package com.precisource.bean;
+package com.precisource.domain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

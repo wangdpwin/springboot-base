@@ -4,7 +4,7 @@ package com.precisource.consts;
  * @Author: xinput
  * @Date: 2020-06-17 11:57
  */
-public class Consts {
+public class BaseConsts {
 
     public static final int RECORD_STATE_VALID = 0;
 

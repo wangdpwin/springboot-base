@@ -3,7 +3,7 @@ package com.precisource.util;
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
-import com.precisource.config.DefaultConfig;
+import com.precisource.consts.DefaultConsts;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -18,9 +18,9 @@ import java.util.Map;
  */
 public class JwtUtils {
 
-    public static String secret = DefaultConfig.get("application.secret");
+    public static String secret = DefaultConsts.get("application.secret");
 
-    public static String tokenExp = DefaultConfig.get("token.exp", "3600");
+    public static String tokenExp = DefaultConsts.get("token.exp", "3600");
 
     public static String sign(String aud) {
         final String jwt = sign(aud, new HashMap());

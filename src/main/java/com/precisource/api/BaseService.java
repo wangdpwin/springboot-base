@@ -1,10 +1,13 @@
 package com.precisource.api;
 
-import com.bleach.common.JsonUtils;
-import com.bleach.common.StringUtils;
-import com.bleach.date.TimeUtils;
-import com.precisource.bean.BaseHttp;
-import com.precisource.config.DefaultConfig;
+import com.precisource.consts.DefaultConsts;
+import com.precisource.consts.ErrorCode;
+import com.precisource.consts.HeaderEnum;
+import com.precisource.domain.BaseHttp;
+import com.precisource.exception.BaseException;
+import com.precisource.util.JsonUtils;
+import com.precisource.util.StringUtils;
+import com.precisource.util.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,17 +37,17 @@ public abstract class BaseService {
      * @return
      */
     protected String currentUserId() {
-        if (StringUtils.equalsIgnoreCase(DefaultConfig.DEFAULT_MODE, DefaultConfig.getMode())) {
+        if (StringUtils.equalsIgnoreCase(DefaultConsts.DEFAULT_MODE, DefaultConsts.getMode())) {
             return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
         }
-        return DefaultConfig.getMockUserId();
+        return DefaultConsts.getMockUserId();
     }
 
     /**
      * 在response的header中添加X-Total-Count
      */
     protected void setTotalCount(long totalCount) {
-        setTotalCount("X-Total-Count", totalCount);
+        setTotalCount(HeaderEnum.TOTOL_COUNT.getType(), totalCount);
     }
 
     /**
@@ -76,9 +79,9 @@ public abstract class BaseService {
      * @param duration like 2h, 3d
      */
     protected void setJWTCookie(String jwt, String duration) {
-        Cookie cookie = new Cookie(DefaultConfig.getCookieTokenName(), jwt);
+        Cookie cookie = new Cookie(DefaultConsts.getCookieTokenName(), jwt);
         cookie.setPath(StringUtils.SLASH);
-        cookie.setSecure(DefaultConfig.getCookieSecure());
+        cookie.setSecure(DefaultConsts.getCookieSecure());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(TimeUtils.parseDuration(duration));
 

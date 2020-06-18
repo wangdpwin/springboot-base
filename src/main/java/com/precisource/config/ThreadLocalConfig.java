@@ -1,6 +1,6 @@
 package com.precisource.config;
 
-import com.precisource.bean.BaseHttp;
+import com.precisource.domain.BaseHttp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

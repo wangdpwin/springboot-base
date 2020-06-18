@@ -1,4 +1,4 @@
-package com.precisource.bean;
+package com.precisource.domain;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

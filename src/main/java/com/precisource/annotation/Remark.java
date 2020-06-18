@@ -1,4 +1,4 @@
-package com.precisource.api;
+package com.precisource.annotation;
 
 import java.lang.annotation.*;
 

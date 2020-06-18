@@ -1,5 +1,7 @@
 package com.precisource.api;
 
+import com.precisource.consts.ErrorCode;
+
 /**
  * @Author: xinput
  * @Date: 2020-06-06 14:37

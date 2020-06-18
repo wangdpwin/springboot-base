@@ -1,18 +1,18 @@
 package com.precisource.handler;
 
 import com.auth0.jwt.JWTExpiredException;
-import com.bleach.ObjectId;
-import com.bleach.common.StreamUtils;
-import com.bleach.common.StringUtils;
 import com.precisource.annotation.PassSecure;
 import com.precisource.annotation.Secure;
-import com.precisource.api.BaseException;
-import com.precisource.api.ErrorCode;
-import com.precisource.api.HeaderEnum;
 import com.precisource.api.Result;
-import com.precisource.bean.BaseHttp;
-import com.precisource.config.DefaultConfig;
+import com.precisource.consts.DefaultConsts;
+import com.precisource.consts.ErrorCode;
+import com.precisource.consts.HeaderEnum;
+import com.precisource.domain.BaseHttp;
+import com.precisource.exception.BaseException;
 import com.precisource.util.JwtUtils;
+import com.precisource.util.ObjectId;
+import com.precisource.util.StreamUtils;
+import com.precisource.util.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ import java.util.Map;
 public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
 
     private static String DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS = "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count";
-    private static String requestClaimsName = DefaultConfig.get("api.request.claims.name", "claims");
+    private static String requestClaimsName = DefaultConsts.get("api.request.claims.name", "claims");
 
     @Autowired
     private ThreadLocal<BaseHttp> baseHttpThreadLocal;
@@ -99,7 +99,7 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-Control-Expose-Headers",
                 "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count, X-Sample-Count");
 
-        List<String> addHeaders = DefaultConfig.getHeader();
+        List<String> addHeaders = DefaultConsts.getHeader();
         if (CollectionUtils.isEmpty(addHeaders)) {
             response.setHeader("Access-Control-Expose-Headers", DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS);
         } else {

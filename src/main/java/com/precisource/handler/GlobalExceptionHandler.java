@@ -1,11 +1,11 @@
 package com.precisource.handler;
 
-import com.bleach.common.BuilderUtils;
-import com.bleach.common.StringUtils;
-import com.precisource.api.BaseException;
-import com.precisource.api.ErrorCode;
 import com.precisource.api.Result;
-import com.precisource.bean.BaseHttp;
+import com.precisource.consts.ErrorCode;
+import com.precisource.domain.BaseHttp;
+import com.precisource.exception.BaseException;
+import com.precisource.util.BuilderUtils;
+import com.precisource.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
