@@ -16,11 +16,16 @@ public class DefaultConsts {
 
     public static final String DEFAULT_MODE = "prod";
 
+    /**
+     * 默认配置文件名称
+     */
+    public static final String DEFAULT_SYSTEM_FILE = "system.properties";
+
     private static SimpleProperties SP;
 
     static {
         try {
-            SP = SimpleProperties.readConfiguration("system.properties");
+            SP = SimpleProperties.readConfiguration(DEFAULT_SYSTEM_FILE);
         } catch (Exception e) {
             SP = null;
         }

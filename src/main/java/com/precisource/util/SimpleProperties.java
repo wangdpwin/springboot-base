@@ -1,5 +1,7 @@
 package com.precisource.util;
 
+import org.slf4j.Logger;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -7,6 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SimpleProperties {
+
+    private static final Logger logger = Logs.get();
 
     private static ClassLoader defaultClassLoader;
 
@@ -43,6 +47,7 @@ public class SimpleProperties {
             try {
                 is = getResourceAsStream(filename);
             } catch (IOException e) {
+                logger.error("Cannot read file: [{}].", filename);
                 System.err.println("Cannot read " + filename);
             }
         }
