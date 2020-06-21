@@ -2,8 +2,9 @@ package com.precisource.handler;
 
 import com.auth0.jwt.JWTExpiredException;
 import com.precisource.annotation.PassSecure;
-import com.precisource.annotation.Secure;
 import com.precisource.api.Result;
+import com.precisource.config.SpringContentUtils;
+import com.precisource.consts.DefaultConfig;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
 import com.precisource.consts.HeaderEnum;
@@ -38,10 +39,12 @@ import java.util.Map;
 public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
 
     private static String DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS = "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count";
-    private static String requestClaimsName = DefaultConsts.get("api.request.claims.name", "claims");
 
     @Autowired
     private ThreadLocal<BaseHttp> baseHttpThreadLocal;
+
+//    @Autowired
+//    private SpringContentUtils contentUtils;
 
     /**
      * 请求处理之前
@@ -97,9 +100,9 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         response.setHeader("Access-Control-Expose-Headers",
-                "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count, X-Sample-Count");
+                "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count");
 
-        List<String> addHeaders = DefaultConsts.getHeader();
+        List<String> addHeaders = DefaultConfig.getHeader();
         if (CollectionUtils.isEmpty(addHeaders)) {
             response.setHeader("Access-Control-Expose-Headers", DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS);
         } else {
@@ -125,6 +128,11 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
             return;
         }
 
+        // 如果是dev环境，直接放行
+        if (DefaultConsts.MODE.DEV.getProfile().equalsIgnoreCase(SpringContentUtils.getActiveProfile())) {
+            return;
+        }
+
         HandlerMethod handlerMethod = (HandlerMethod) object;
         Method method = handlerMethod.getMethod();
 
@@ -136,10 +144,11 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
             }
         }
 
+        // 如果没有注解，默认都需要token验证
         // 检查有没有需要用户权限的注解
-        if (!method.isAnnotationPresent(Secure.class)) {
-            return;
-        }
+//        if (!method.isAnnotationPresent(Secure.class)) {
+//            return;
+//        }
 
         // 从 http 请求头中取出 token
         String token = StringUtils.trim(StringUtils.substringAfter(
@@ -154,7 +163,6 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
             try {
                 final Map<String, Object> claims = JwtUtils.verify(token);
                 String id = String.valueOf(claims.get("aud"));
-                request.setAttribute(requestClaimsName, claims);
                 request.setAttribute("requestLogCustomData", "[USER-" + id + "]");
                 request.setAttribute("aud", id);
             } catch (Exception e) {

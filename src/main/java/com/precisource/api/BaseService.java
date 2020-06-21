@@ -1,6 +1,6 @@
 package com.precisource.api;
 
-import com.precisource.consts.DefaultConsts;
+import com.precisource.consts.DefaultConfig;
 import com.precisource.consts.ErrorCode;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
@@ -25,9 +25,9 @@ public abstract class BaseService {
      * @param duration like 2h, 3d
      */
     protected void setJWTCookie(String jwt, String duration) {
-        Cookie cookie = new Cookie(DefaultConsts.getCookieTokenName(), jwt);
+        Cookie cookie = new Cookie(DefaultConfig.getCookieTokenName(), jwt);
         cookie.setPath(StringUtils.SLASH);
-        cookie.setSecure(DefaultConsts.getCookieSecure());
+        cookie.setSecure(DefaultConfig.getCookieSecure());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(TimeUtils.parseDuration(duration));
 

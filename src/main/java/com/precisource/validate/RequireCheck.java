@@ -1,8 +1,5 @@
 package com.precisource.validate;
 
-import com.precisource.util.Logs;
-import org.slf4j.Logger;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Collection;
@@ -12,8 +9,6 @@ import java.util.Collection;
  * @Date: 2020-06-19 18:27
  */
 public class RequireCheck implements ConstraintValidator<Require, Object> {
-
-    private static final Logger logger = Logs.get();
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
@@ -30,7 +25,11 @@ public class RequireCheck implements ConstraintValidator<Require, Object> {
         }
 
         if (value.getClass().isArray()) {
-            return java.lang.reflect.Array.getLength(value) > 0;
+            try {
+                return java.lang.reflect.Array.getLength(value) > 0;
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         return true;

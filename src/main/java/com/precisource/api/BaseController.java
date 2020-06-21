@@ -1,5 +1,7 @@
 package com.precisource.api;
 
+import com.precisource.config.SpringContentUtils;
+import com.precisource.consts.DefaultConfig;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
 import com.precisource.consts.HeaderEnum;
@@ -36,10 +38,13 @@ public abstract class BaseController {
      * @return
      */
     protected String currentUserId() {
-        if (StringUtils.equalsIgnoreCase(DefaultConsts.DEFAULT_MODE, DefaultConsts.getMode())) {
-            return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
+
+        // 如果是dev环境，直接放行
+        if (DefaultConsts.MODE.DEV.getProfile().equalsIgnoreCase(SpringContentUtils.getActiveProfile())) {
+            return DefaultConfig.getMockUserId();
         }
-        return DefaultConsts.getMockUserId();
+
+        return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
     }
 
     /**

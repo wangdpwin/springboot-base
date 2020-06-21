@@ -5,20 +5,28 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 /**
- * 验证参数不能为空，且不允许为空字符串
- *
  * @Author: xinput
- * @Date: 2020-06-19 17:00
+ * @Date: 2020-06-20 18:21
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = RequireCheck.class)
-public @interface Require {
+@Constraint(validatedBy = RangeCheck.class)
+public @interface Range {
 
     String message();
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    /**
+     * @return size the element must be higher or equal to
+     */
+    double min() default Double.MIN_VALUE;
+
+    /**
+     * @return size the element must be lower or equal to
+     */
+    double max() default Double.MAX_VALUE;
 }

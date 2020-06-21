@@ -1,139 +1,83 @@
 package com.precisource.consts;
 
-import com.google.common.collect.Lists;
-import com.precisource.util.SimpleProperties;
-import com.precisource.util.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.Arrays;
-import java.util.List;
-
 /**
+ * System.properties中的属性
+ *
  * @Author: xinput
  * @Date: 2020-06-10 21:48
  */
 public class DefaultConsts {
 
-    public static final String DEFAULT_MODE = "prod";
+    public enum MODE {
+        DEV("dev"),
+        TEST("test"),
+        PROD("prod");
+
+        private String profile;
+
+        MODE(String profile) {
+            this.profile = profile;
+        }
+
+        public String getProfile() {
+            return profile;
+        }
+    }
 
     /**
      * 默认配置文件名称
      */
     public static final String DEFAULT_SYSTEM_FILE = "system.properties";
 
-    private static SimpleProperties SP;
-
-    static {
-        try {
-            SP = SimpleProperties.readConfiguration(DEFAULT_SYSTEM_FILE);
-        } catch (Exception e) {
-            SP = null;
-        }
-    }
-
-    public static final List<String> getHeader() {
-        if (SP == null) {
-            return Lists.newArrayList();
-        }
-
-        String[] headerArray = SP.getStringProperty("addHeaders").split(StringUtils.COMMA);
-        List<String> headers = Lists.newArrayList();
-        Arrays.stream(headerArray).forEach(header -> headers.add(header));
-
-        return headers;
-    }
+    /**
+     * 该系统默认返回的access-control-expose-headers中目前仅包含以下这些
+     * Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
+     * If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count
+     * <p>
+     * 在system.properties中可以通过设置header.add参数来额外添加其他需要的值
+     */
+    public static final String HEADER_ADD = "header.add";
 
     /**
-     * get SECRET_KEY
-     *
-     * @return
+     * 在开发环境下默认使用的用户Id
      */
-    public static final String getSecretKey() {
-        return get("application.secret", "xinput");
-    }
+    public static final String MOCK_USER_ID = "mock.userId";
 
     /**
-     * 获取开发模式
-     *
-     * @return
+     * 在开发环境下默认使用的用户名称
      */
-    public static final String getMode() {
-        return get("application.mode", DEFAULT_MODE);
-    }
-
-    public static final String getMockUserId() {
-        return get("mock.userId");
-    }
-
-    public static final String getMockUserName() {
-        return get("mock.name");
-    }
+    public static final String MOCK_USER_NAME = "mock.userName";
 
     /**
-     * cookie中token的值
+     * 设置Cookie中token对应的key值，默认是jwt
      */
-    public static final String getCookieTokenName() {
-        return get("api.token.cookie", "jwt");
-    }
+    public static final String API_COOKIE_TOKEN = "api.cookie.token";
 
     /**
-     * cookie验证
+     * 是否开启Cookie验证，默认关闭
      */
-    public static final boolean getCookieSecure() {
-        return getBoolean("application.session.secure", Boolean.FALSE);
-    }
+    public static final String API_COOKIE_ENABLE = "api.cookie.enable";
 
     /**
-     * 获取自定义key对应的value
-     *
-     * @param key
-     * @return
+     * 是否默认开启全局的token验证
+     * 在开发环境下，默认关闭
+     * 在测试环境和正式环境下，默认开启，如果某个方法不想验证，可以使用 @PassSecure 注解
      */
-    public static final String get(String key) {
-        return get(key, StringUtils.EMPTY);
-    }
+    public static final String API_SECURE_ENABLE = "api.secure";
 
     /**
-     * 获取自定义key对应的value,如果不存在，使用默认值 defaultValue
-     *
-     * @param key
-     * @param defaultValue
-     * @return
+     * token过期时间
      */
-    public static final String get(String key, String defaultValue) {
-        if (SP == null) {
-            return defaultValue;
-        }
+    public static final String API_TOKEN_EXPIRE = "token.exp";
 
-        return SP.getStringProperty(key, defaultValue);
-    }
+    /**
+     * Token刷新时间
+     */
+    public static final String API__REFRESH_TOKEN_EXPIRE = "refresh.token.exp";
 
-    public static final boolean getBoolean(String key) {
-        return getBoolean(key, Boolean.FALSE);
-    }
+    /**
+     * secure的key
+     */
+    public static final String API_SECRET_KEY = "api.secret.key";
 
-    public static final boolean getBoolean(String key, boolean defaultValue) {
-        if (SP == null) {
-            return defaultValue;
-        }
-
-        return SP.getBooleanProperty(key, defaultValue);
-    }
-
-    public static final List<String> getList(String key) {
-        return getList(key, Lists.newArrayList());
-    }
-
-    public static final List<String> getList(String key, List<String> defaultList) {
-        if (SP == null) {
-            return defaultList;
-        }
-
-        String[] arrs = SP.getStringArrayProperty(key);
-        if (ArrayUtils.isEmpty(arrs)) {
-            return Lists.newArrayList(arrs);
-        }
-
-        return defaultList;
-    }
 }
