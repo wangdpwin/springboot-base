@@ -9,11 +9,15 @@ import com.precisource.annotation.Remark;
 public enum HeaderEnum {
 
     @Remark("请求id")
-    REQUEST_ID("RequestId"),
+    REQUEST_ID("X-Request-Id"),
+    @Remark("Session Id")
+    SESSION_ID("X-Session-Id"),
     @Remark("请求开始时间")
     START_TIME("StartTime"),
     @Remark("返回总数，用于前端计算分页")
-    TOTOL_COUNT("X-Total-Count");
+    TOTOL_COUNT("X-Total-Count"),
+    @Remark("默认返回类型")
+    DEFAULT_CONTENT_TYPE("application/json; charset=utf-8");
 
     private String type;
 

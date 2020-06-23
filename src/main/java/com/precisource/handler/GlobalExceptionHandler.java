@@ -117,7 +117,12 @@ public class GlobalExceptionHandler {
         ResponseEntity responseEntity;
         switch (be.getHttpStatus()) {
             case OK:
-                responseEntity = ResponseEntity.status(HttpStatus.OK).build();
+                String message = be.getMessage();
+                if (StringUtils.isNullOrEmpty(message)) {
+                    responseEntity = ResponseEntity.status(HttpStatus.OK).build();
+                } else {
+                    responseEntity = ResponseEntity.status(HttpStatus.OK).body(be.getMessage());
+                }
                 break;
             case CREATED:
             case NO_CONTENT:
@@ -136,33 +141,49 @@ public class GlobalExceptionHandler {
         return responseEntity;
     }
 
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<Result> nullPointExceptionHandler(HttpServletRequest req, HttpServletResponse resp, NullPointerException npe) {
-        logger.error("{} {} NullPointerException. ", req.getMethod(), req.getRequestURI(), npe);
-        Result result = BuilderUtils.of(Result::new)
-                .with(Result::setCode, ErrorCode.SERVER_INTERNAL_ERROR)
-                .with(Result::setMessage, npe.getMessage())
-                .build();
-
-        clear(req);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
-    }
-
-
     /**
-     * 所有未被包含的异常
+     * 所有Exception的异常
      *
      * @param req
-     * @param resp
      * @param e
      * @return
      */
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, HttpServletResponse resp, Exception e) {
-        logger.error("{} {} Exception. ", req.getMethod(), req.getRequestURI(), e);
+    public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, Exception e) {
+        logger.error("request-id:[{}] request:[{}:{}] s", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        return global(req, e.getMessage());
+    }
+
+    /**
+     * 所有Error的异常
+     *
+     * @param req
+     * @param error
+     * @return
+     */
+    @ExceptionHandler(value = Error.class)
+    public ResponseEntity<Result> errorHandler(HttpServletRequest req, Error error) {
+        logger.error("request-id:[{}] request:[{}:{}] s", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        return global(req, error.getMessage());
+    }
+
+    /**
+     * 最高等级的Throwable异常
+     *
+     * @param req
+     * @param throwable
+     * @return
+     */
+    @ExceptionHandler(value = Throwable.class)
+    public ResponseEntity<Result> throwableHandler(HttpServletRequest req, Throwable throwable) {
+        logger.error("request-id:[{}] request:[{}:{}] ", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        return global(req, throwable.getMessage());
+    }
+
+    private ResponseEntity<Result> global(HttpServletRequest req, String errorMsg) {
         Result result = BuilderUtils.of(Result::new)
                 .with(Result::setCode, ErrorCode.SERVER_INTERNAL_ERROR)
-                .with(Result::setMessage, e.getMessage())
+                .with(Result::setMessage, errorMsg)
                 .build();
 
         clear(req);
@@ -175,8 +196,13 @@ public class GlobalExceptionHandler {
      * @param req
      */
     private void clear(HttpServletRequest req) {
-        req.getSession().invalidate();
-        baseHttpThreadLocal.remove();
+        if (req != null && req.getSession() != null) {
+            req.getSession().invalidate();
+        }
+
+        if (baseHttpThreadLocal != null) {
+            baseHttpThreadLocal.remove();
+        }
     }
 
 }

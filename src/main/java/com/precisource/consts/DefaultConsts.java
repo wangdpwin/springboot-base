@@ -80,4 +80,23 @@ public class DefaultConsts {
      */
     public static final String API_SECRET_KEY = "api.secret.key";
 
+    /**
+     * 微信小程序设置:wechat.appid
+     */
+    public static final String WECHAT_APPID = "wechat.appid";
+
+    /**
+     * 微信小程序设置:wechat.secret
+     */
+    public static final String WECHAT_SECRET = "wechat.secret";
+
+    /**
+     * 对象存储的key
+     */
+    public static final String BUCKET_ACCESS_KEY = "bucket.access.key";
+
+    /**
+     * 对象存储的秘钥
+     */
+    public static final String BUCKET_SECRET_KEY = "bucket.access.secret";
 }

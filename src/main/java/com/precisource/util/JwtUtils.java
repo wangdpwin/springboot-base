@@ -3,7 +3,7 @@ package com.precisource.util;
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
-import com.precisource.consts.DefaultConfig;
+import com.precisource.config.DefaultConfig;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;

@@ -1,6 +1,7 @@
-package com.precisource.consts;
+package com.precisource.config;
 
 import com.google.common.collect.Lists;
+import com.precisource.consts.DefaultConsts;
 import com.precisource.util.SimpleProperties;
 import com.precisource.util.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -97,6 +98,38 @@ public class DefaultConfig {
 
     public static String getApiSecureKey() {
         return get(DefaultConsts.API_SECRET_KEY, "xinput");
+    }
+
+    /**
+     * 获取微信小程序id
+     */
+    public static String getWechatAppid() {
+        return get(DefaultConsts.WECHAT_APPID);
+    }
+
+    /**
+     * 获取微信小程序 secret
+     */
+    public static String getWechatSecret() {
+        return get(DefaultConsts.WECHAT_SECRET);
+    }
+
+    /**
+     * 获取对象存储的AK
+     *
+     * @return
+     */
+    public static String getBucketKey() {
+        return get(DefaultConsts.BUCKET_ACCESS_KEY);
+    }
+
+    /**
+     * 获取对象存储的SK
+     *
+     * @return
+     */
+    public static String getBucketSecretKey() {
+        return get(DefaultConsts.BUCKET_SECRET_KEY);
     }
 
     /**

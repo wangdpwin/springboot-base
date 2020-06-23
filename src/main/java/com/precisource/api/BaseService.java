@@ -1,6 +1,6 @@
 package com.precisource.api;
 
-import com.precisource.consts.DefaultConfig;
+import com.precisource.config.DefaultConfig;
 import com.precisource.consts.ErrorCode;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;

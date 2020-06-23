@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = RequireCheck.class)
 public @interface Require {
 
-    String message();
+    String message() default "params is empty";
 
     Class<?>[] groups() default {};
 

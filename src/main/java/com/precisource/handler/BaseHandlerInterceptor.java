@@ -3,8 +3,8 @@ package com.precisource.handler;
 import com.auth0.jwt.JWTExpiredException;
 import com.precisource.annotation.PassSecure;
 import com.precisource.api.Result;
+import com.precisource.config.DefaultConfig;
 import com.precisource.config.SpringContentUtils;
-import com.precisource.consts.DefaultConfig;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
 import com.precisource.consts.HeaderEnum;
@@ -76,31 +76,25 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
         } else {
             requestId = ObjectId.get().toString();
         }
+        // request id
         request.setAttribute(HeaderEnum.REQUEST_ID.getType(), requestId);
-
-        String defaultContentType = "application/json; charset=utf-8";
-        //set default content type
-        response.setContentType(defaultContentType);
-
-        // default content type without utf-8
-        if (response.getContentType().equalsIgnoreCase("application/json")) {
-            response.setContentType(defaultContentType);
-        }
 
         //session id
         String sessionId = request.getSession().getId();
         if (StringUtils.isNotEmpty(sessionId)) {
-            response.addHeader("X-Session-Id", sessionId);
+            response.addHeader(HeaderEnum.SESSION_ID.getType(), sessionId);
         }
 
-        // request id
-        response.setHeader("X-Request-Id", requestId);
+        //set default content type
+        response.setContentType(HeaderEnum.DEFAULT_CONTENT_TYPE.getType());
+
+        // default content type without utf-8
+        if (response.getContentType().equalsIgnoreCase("application/json")) {
+            response.setContentType(HeaderEnum.DEFAULT_CONTENT_TYPE.getType());
+        }
 
         //set cors
         response.addHeader("Access-Control-Allow-Origin", "*");
-
-        response.setHeader("Access-Control-Expose-Headers",
-                "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count");
 
         List<String> addHeaders = DefaultConfig.getHeader();
         if (CollectionUtils.isEmpty(addHeaders)) {

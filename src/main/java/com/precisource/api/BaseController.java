@@ -1,7 +1,7 @@
 package com.precisource.api;
 
+import com.precisource.config.DefaultConfig;
 import com.precisource.config.SpringContentUtils;
-import com.precisource.consts.DefaultConfig;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
 import com.precisource.consts.HeaderEnum;
@@ -9,12 +9,14 @@ import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
 import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
+import com.precisource.util.TimeUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -45,6 +47,22 @@ public abstract class BaseController {
         }
 
         return baseHttpThreadLocal.get().getRequest().getAttribute("aud").toString();
+    }
+
+    /**
+     * set jwt token cookie with httpOnly and secure deps on your 'application.session.secure' setting.
+     *
+     * @param jwt
+     * @param duration like 2h, 3d
+     */
+    protected void setJWTCookie(String jwt, String duration) {
+        Cookie cookie = new Cookie(DefaultConfig.getCookieTokenName(), jwt);
+        cookie.setPath(StringUtils.SLASH);
+        cookie.setSecure(DefaultConfig.getCookieSecure());
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(TimeUtils.parseDuration(duration));
+
+        baseHttpThreadLocal.get().getResponsen().addCookie(cookie);
     }
 
     /**
