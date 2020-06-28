@@ -172,7 +172,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, Exception e) {
-        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI(), e);
         return global(req, e.getMessage());
     }
 
@@ -185,7 +185,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Error.class)
     public ResponseEntity<Result> errorHandler(HttpServletRequest req, Error error) {
-        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI(), error);
         return global(req, error.getMessage());
     }
 
@@ -198,7 +198,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Throwable.class)
     public ResponseEntity<Result> throwableHandler(HttpServletRequest req, Throwable throwable) {
-        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI(), throwable);
         return global(req, throwable.getMessage());
     }
 

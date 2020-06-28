@@ -1,6 +1,5 @@
 package com.precisource.util;
 
-import com.precisource.config.DefaultConfig;
 import com.precisource.domain.WechatUserInfo;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
@@ -22,13 +21,15 @@ public class WechatUtils {
     private static String wxUrl = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=#{3}";
 
     public static WechatUserInfo code2Session(String code) {
-        String requestUrl = MessageFormat.format(wxUrl, DefaultConfig.getWechatAppid(), DefaultConfig.getWechatSecret(), code, "authorization_code");
+//        String requestUrl = MessageFormat.format(wxUrl, DefaultConfig.getWechatAppid(), DefaultConfig.getWechatSecret(), code, "authorization_code");
+        String requestUrl = MessageFormat.format(wxUrl, "wx76ae1a2d73004c40", "c416543027b9449d27955ef663509f3a", code, "authorization_code");
 
         WechatUserInfo authInfo = null;
         try {
             String result = Request.Get(requestUrl).execute().returnContent().asString();
+            System.out.println(result);
             logger.info("code2session信息:[{}]", result);
-            authInfo = JsonUtils.toBean(requestUrl, WechatUserInfo.class);
+            authInfo = JsonUtils.toBean(result, WechatUserInfo.class);
         } catch (ClientProtocolException e) {
             logger.error("登录凭证校验失败,code:[{}].", code, e);
         } catch (IOException e) {
@@ -36,5 +37,11 @@ public class WechatUtils {
         }
 
         return authInfo;
+    }
+
+    public static void main(String[] args) {
+        String code = "033s42zG07ilfg2jJqxG0xGezG0s42zp";
+        WechatUserInfo userInfo = WechatUtils.code2Session(code);
+        System.out.println(JsonUtils.toJsonString(userInfo));
     }
 }
