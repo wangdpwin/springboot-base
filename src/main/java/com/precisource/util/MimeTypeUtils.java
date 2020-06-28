@@ -1,18 +1,18 @@
 package com.precisource.util;
 
-import com.google.common.collect.Maps;
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.sax.BodyContentHandler;
-import org.slf4j.Logger;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.*;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  * @author zanxus
@@ -21,43 +21,29 @@ import java.util.Map;
  */
 public class MimeTypeUtils {
 
-    private static Logger logger = Logs.get();
-
-    private static Map<String, String> mimeTypes = Maps.newHashMap();
-
-    static {
-        mimeTypes.put("png", "image/png");
-        mimeTypes.put("svg", "image/svg+xml");
-        mimeTypes.put("sh", "application/x-sh");
-        mimeTypes.put("e", "text/x-eiffel");
-    }
+    private static final String defaultValue = "text/plain";
 
     public static String getContentType(File file) {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            logger.error("自动检测文件类型时未找到指定文件 文件名称：{} ", file.getAbsolutePath(), e);
+        if (file.isDirectory()) {
+            return "the target is a directory";
         }
-        ContentHandler contenthandler = new BodyContentHandler();
+
+        AutoDetectParser parser = new AutoDetectParser();
+        parser.setParsers(new HashMap<>());
+
         Metadata metadata = new Metadata();
-        metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
-        Parser parser = new AutoDetectParser();
+        metadata.add(Metadata.RESOURCE_NAME_KEY, file.getName());
+
+        InputStream stream;
         try {
-            parser.parse(is, contenthandler, metadata, new ParseContext());
-        } catch (IOException e) {
-            logger.error("自动检测文件类型时IO异常 文件名称:{}", file.getAbsolutePath(), e);
-        } catch (SAXException e) {
-            logger.error("自动检测文件类型时SAX解析异常 文件名称:{}", file.getAbsolutePath(), e);
-        } catch (TikaException e) {
-            logger.error("自动检测文件类型时发生未知异常 文件名称:{}", file, e);
+            stream = new FileInputStream(file);
+            parser.parse(stream, new DefaultHandler(), metadata, new ParseContext());
+            stream.close();
+        } catch (TikaException | SAXException | IOException e) {
+
+            return defaultValue;
         }
-        String mediaType = metadata.get(Metadata.CONTENT_TYPE);
-        return mediaType;
-    }
 
-    public static String getContentType(String extension) {
-        return mimeTypes.getOrDefault(extension, "text/plain");
+        return metadata.get(HttpHeaders.CONTENT_TYPE);
     }
-
 }

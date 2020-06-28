@@ -105,6 +105,28 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 空指针异常
+     *
+     * @param req
+     * @param resp
+     * @param npe
+     * @return
+     */
+    @ExceptionHandler(value = NullPointerException.class)
+    public ResponseEntity<Result> constraintViolationExceptionHandler(HttpServletRequest req, HttpServletResponse resp, NullPointerException npe) {
+        logger.error("{} {} NullPointerException.", req.getMethod(), req.getRequestURI(), npe);
+        String detailMessage = npe.getStackTrace()[0].toString();
+
+        Result result = BuilderUtils.of(Result::new)
+                .with(Result::setCode, ErrorCode.SERVER_INTERNAL_ERROR)
+                .with(Result::setMessage, detailMessage)
+                .build();
+
+        clear(req);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(result);
+    }
+
+    /**
      * 自己封装的基础异常
      *
      * @param req
@@ -150,7 +172,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Result> exceptionHandler(HttpServletRequest req, Exception e) {
-        logger.error("request-id:[{}] request:[{}:{}] s", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
         return global(req, e.getMessage());
     }
 
@@ -163,7 +185,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Error.class)
     public ResponseEntity<Result> errorHandler(HttpServletRequest req, Error error) {
-        logger.error("request-id:[{}] request:[{}:{}] s", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
         return global(req, error.getMessage());
     }
 
@@ -176,7 +198,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Throwable.class)
     public ResponseEntity<Result> throwableHandler(HttpServletRequest req, Throwable throwable) {
-        logger.error("request-id:[{}] request:[{}:{}] ", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI());
         return global(req, throwable.getMessage());
     }
 
