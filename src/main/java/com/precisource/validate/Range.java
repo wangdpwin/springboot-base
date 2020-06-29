@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = RangeCheck.class)
 public @interface Range {
 
-    String message();
+    String message() default "value shoud between min and max";
 
     Class<?>[] groups() default {};
 

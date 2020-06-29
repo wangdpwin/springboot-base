@@ -1,5 +1,6 @@
 package com.precisource.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
@@ -21,7 +22,7 @@ public class JsonUtils {
 
     private static final Logger logger = Logs.get();
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public static String toJsonString(Object obj) {
         try {

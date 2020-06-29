@@ -3,9 +3,10 @@ package com.precisource.model;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.precisource.consts.BaseConsts;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @Author: xinput
@@ -16,10 +17,11 @@ public class BaseModel {
     @TableId
     private String id;
 
+    @JsonIgnore
     private Integer recordState = BaseConsts.RECORD_STATE_VALID;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime = new Date();
+    private LocalDateTime createTime = LocalDateTime.now();
 
     /**
      * @TableField(value = "update_time", update = "now()")
@@ -28,7 +30,7 @@ public class BaseModel {
      */
     @TableField(value = "update_time", update = "now()")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime = new Date();
+    private LocalDateTime updateTime = LocalDateTime.now();
 
     public String getId() {
         return id;
@@ -46,19 +48,19 @@ public class BaseModel {
         this.recordState = recordState;
     }
 
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 

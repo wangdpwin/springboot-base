@@ -26,4 +26,10 @@ public class BaseConsts {
      */
     public static final boolean DISABLE = true;
 
+    // ------------------------ 性别 ---------------------------
+
+    public static final String MALE = "male";
+    public static final String FEMALE = "female";
+    public static final String M = "M";
+    public static final String F = "F";
 }
