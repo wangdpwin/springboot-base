@@ -13,20 +13,19 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import com.precisource.model.BaseModel;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @Author: xinput
@@ -38,13 +37,18 @@ public class JsonUtils {
 
     private static ObjectMapper mapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            // 指定时区
+            .setTimeZone(TimeZone.getTimeZone("GMT+8:00"))
+            // 日期类型字符串处理
+            .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
             .registerModule(
+                    // java8日期处理
                     new JavaTimeModule()
                             .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                            .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                             .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                            .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                             .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                            .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                            .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                             .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm:ss")))
             );
 
@@ -172,18 +176,5 @@ public class JsonUtils {
 
     private static JavaType getCollectionType(Class<?> collectionClass, Class<?>... elementClasses) {
         return mapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
-    }
-
-    public static void main(String[] args) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", ObjectId.stringId());
-        map.put("dateTime", LocalDateTime.now());
-        map.put("date", LocalDate.now());
-        map.put("time", LocalTime.now());
-        System.out.println(JsonUtils.toJsonString(map, true));
-
-        BaseModel model = new BaseModel();
-        model.setId(ObjectId.stringId());
-        System.out.println(JsonUtils.toJsonString(model, true));
     }
 }
