@@ -20,7 +20,7 @@ public class BaseModel {
     @JsonIgnore
     private Integer recordState = BaseConsts.RECORD_STATE_VALID;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private LocalDateTime createTime = LocalDateTime.now();
 
     /**
@@ -29,7 +29,7 @@ public class BaseModel {
      * 所以配置在mysql上的ON UPDATE CURRENT_TIMESTAMP就不会生效
      */
     @TableField(value = "update_time", update = "now()")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private LocalDateTime updateTime = LocalDateTime.now();
 
     public String getId() {
