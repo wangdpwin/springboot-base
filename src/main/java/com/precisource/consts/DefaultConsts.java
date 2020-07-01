@@ -30,15 +30,6 @@ public class DefaultConsts {
     public static final String DEFAULT_SYSTEM_FILE = "system.properties";
 
     /**
-     * 该系统默认返回的access-control-expose-headers中目前仅包含以下这些
-     * Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match,
-     * If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count
-     * <p>
-     * 在system.properties中可以通过设置header.add参数来额外添加其他需要的值
-     */
-    public static final String HEADER_ADD = "header.add";
-
-    /**
      * 在开发环境下默认使用的用户Id
      */
     public static final String MOCK_USER_ID = "mock.userId";

@@ -4,9 +4,10 @@ import com.precisource.config.DefaultConfig;
 import com.precisource.config.SpringContentUtils;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
-import com.precisource.consts.HeaderEnum;
+import com.precisource.consts.HeaderConsts;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
+import com.precisource.util.CommonUtils;
 import com.precisource.util.JsonUtils;
 import com.precisource.util.StringUtils;
 import com.precisource.util.TimeUtils;
@@ -18,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -69,7 +71,7 @@ public abstract class BaseController {
      * 在response的header中添加X-Total-Count
      */
     protected void setTotalCount(long totalCount) {
-        setTotalCount(HeaderEnum.TOTOL_COUNT.getType(), totalCount);
+        setTotalCount(HeaderConsts.TOTOL_COUNT_KEY, totalCount);
     }
 
     /**
@@ -84,11 +86,19 @@ public abstract class BaseController {
      */
     protected void setHeader(String headerName, String value) {
         HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
+        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue + StringUtils.COMMA + headerName);
+
         response.setHeader(headerName, value);
     }
 
     protected void setHeader(List<Header> headers) {
         HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+
+        String headerNames = CommonUtils.union(CommonUtils.collectColumn(headers, Header::getName));
+        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
+        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue + StringUtils.COMMA + headerNames);
+
         if (CollectionUtils.isEmpty(headers)) {
             headers.forEach(header -> response.setHeader(header.getName(), String.valueOf(header.getValue())));
         }
@@ -98,7 +108,7 @@ public abstract class BaseController {
      * set total count header to 0 and render empty list.
      */
     protected void renderEmptyList() {
-        baseHttpThreadLocal.get().getResponsen().setHeader(HeaderEnum.TOTOL_COUNT.getType(), "0");
+        baseHttpThreadLocal.get().getResponsen().setHeader(HeaderConsts.TOTOL_COUNT_KEY, "0");
         throw new BaseException(HttpStatus.OK, JsonUtils.toJsonString(Lists.newArrayList()));
     }
 
@@ -128,6 +138,10 @@ public abstract class BaseController {
      */
     protected void noContent() {
         throw new BaseException(HttpStatus.NO_CONTENT);
+    }
+
+    protected void redirect(String url) throws IOException {
+        this.baseHttpThreadLocal.get().getResponsen().sendRedirect(url);
     }
 
     /**
@@ -263,5 +277,6 @@ public abstract class BaseController {
     public void limitExceeded(String message) {
         throw new BaseException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, ErrorCode.CLIENT_OVER_QUOTA, message);
     }
+
 
 }

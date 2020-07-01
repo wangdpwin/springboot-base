@@ -3,18 +3,15 @@ package com.precisource.handler;
 import com.auth0.jwt.JWTExpiredException;
 import com.precisource.annotation.PassSecure;
 import com.precisource.api.Result;
-import com.precisource.config.DefaultConfig;
 import com.precisource.config.SpringContentUtils;
 import com.precisource.consts.DefaultConsts;
 import com.precisource.consts.ErrorCode;
-import com.precisource.consts.HeaderEnum;
+import com.precisource.consts.HeaderConsts;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
 import com.precisource.util.JwtUtils;
 import com.precisource.util.ObjectId;
-import com.precisource.util.StreamUtils;
 import com.precisource.util.StringUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -25,7 +22,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,8 +33,6 @@ import java.util.Map;
  */
 @Component
 public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
-
-    private static String DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS = "Origin, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Accept-Encoding, X-Request-Id, X-Total-Count";
 
     @Autowired
     private ThreadLocal<BaseHttp> baseHttpThreadLocal;
@@ -70,43 +64,38 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
      * @param response
      */
     private void setHeader(HttpServletRequest request, HttpServletResponse response) {
-        String requestId = (String) request.getAttribute(HeaderEnum.REQUEST_ID.getType());
+        String requestId = (String) request.getAttribute(HeaderConsts.REQUEST_ID_KEY);
         if (StringUtils.isNotEmpty(requestId)) {
             requestId = new StringBuffer(20).append(ObjectId.get().toString()).append("-").append(requestId).toString();
         } else {
             requestId = ObjectId.get().toString();
         }
         // request id
-        request.setAttribute(HeaderEnum.REQUEST_ID.getType(), requestId);
+        request.setAttribute(HeaderConsts.REQUEST_ID_KEY, requestId);
 
         //session id
         String sessionId = request.getSession().getId();
         if (StringUtils.isNotEmpty(sessionId)) {
-            response.addHeader(HeaderEnum.SESSION_ID.getType(), sessionId);
+            response.addHeader(HeaderConsts.SESSION_ID_KEY, sessionId);
         }
 
         //set default content type
-        response.setContentType(HeaderEnum.DEFAULT_CONTENT_TYPE.getType());
+        response.setContentType(HeaderConsts.DEFAULT_CONTENT_TYPE_KEY);
 
         // default content type without utf-8
         if (response.getContentType().equalsIgnoreCase("application/json")) {
-            response.setContentType(HeaderEnum.DEFAULT_CONTENT_TYPE.getType());
+            response.setContentType(HeaderConsts.DEFAULT_CONTENT_TYPE_KEY);
         }
 
         //set cors
         response.addHeader("Access-Control-Allow-Origin", "*");
 
-        List<String> addHeaders = DefaultConfig.getHeader();
-        if (CollectionUtils.isEmpty(addHeaders)) {
-            response.setHeader("Access-Control-Expose-Headers", DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS);
-        } else {
-            response.setHeader("Access-Control-Expose-Headers",
-                    DEFALUT_ACCESS_CONTROL_EXPOSE_HEADERS + StringUtils.COMMA + StreamUtils.union(addHeaders));
-        }
+        // set Access-Control-Expose-Headers
+        response.addHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_VALUE);
 
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
-            response.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, PUT, DELETE");
-            response.setHeader("Access-Control-Max-Age", "86400");
+            response.setHeader(HeaderConsts.ACCESS_CONTROL_ALLOW_METHODS_KEY, HeaderConsts.ACCESS_CONTROL_ALLOW_METHODS_VALUE);
+            response.setHeader(HeaderConsts.ACCESS_CONTROL_MAX_AGE_KEY, HeaderConsts.ACCESS_CONTROL_MAX_AGE_VALUE);
         }
     }
 

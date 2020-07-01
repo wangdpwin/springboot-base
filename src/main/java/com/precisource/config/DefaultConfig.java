@@ -6,7 +6,6 @@ import com.precisource.util.SimpleProperties;
 import com.precisource.util.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,24 +22,6 @@ public class DefaultConfig {
         } catch (Exception e) {
             SP = null;
         }
-    }
-
-    /**
-     * 自定义额外添加在heder中的参数
-     *
-     * @return
-     */
-    public static final List<String> getHeader() {
-        if (SP == null) {
-            return Lists.newArrayList();
-        }
-
-        String headerString = get(DefaultConsts.HEADER_ADD, StringUtils.EMPTY);
-        String[] headerArray = headerString.split(StringUtils.COMMA);
-        List<String> headers = Lists.newArrayList();
-        Arrays.stream(headerArray).forEach(header -> headers.add(header));
-
-        return headers;
     }
 
     /**
