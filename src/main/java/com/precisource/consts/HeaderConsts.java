@@ -38,4 +38,7 @@ public class HeaderConsts {
     public final static String ACCESS_CONTROL_MAX_AGE_KEY = "Access-Control-Max-Age";
 
     public final static String ACCESS_CONTROL_MAX_AGE_VALUE = "86400";
+
+    @Remark("设置文件名")
+    public final static String CONTENT_DISPOSITION_KEY = "Content-Disposition";
 }

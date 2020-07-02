@@ -4,6 +4,8 @@ import com.precisource.api.Result;
 import com.precisource.consts.ErrorCode;
 import com.precisource.domain.BaseHttp;
 import com.precisource.exception.BaseException;
+import com.precisource.exception.BaseFileException;
+import com.precisource.exception.BaseUnexpectedException;
 import com.precisource.util.BuilderUtils;
 import com.precisource.util.StringUtils;
 import org.slf4j.Logger;
@@ -126,6 +128,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(result);
     }
 
+    @ExceptionHandler(value = BaseFileException.class)
+    public ResponseEntity<Object> baseFileExceptionHandler(HttpServletRequest req, HttpServletResponse resp, BaseFileException bfe) {
+        clear(req);
+        ResponseEntity<Object> responseEntity = ResponseEntity.ok()
+                .contentLength(bfe.getSize())
+                .body(bfe.getResource());
+        return responseEntity;
+    }
+
     /**
      * 自己封装的基础异常
      *
@@ -161,6 +172,12 @@ public class GlobalExceptionHandler {
 
         clear(req);
         return responseEntity;
+    }
+
+    @ExceptionHandler(value = BaseUnexpectedException.class)
+    public ResponseEntity<Result> baseUnexpectedExceptionHandler(HttpServletRequest req, HttpServletResponse resp, BaseUnexpectedException une) {
+        logger.error("request-id:[{}] request:[{}:{}]", req.getAttribute("X-Request-Id"), req.getMethod(), req.getRequestURI(), une);
+        return global(req, une.getMessage());
     }
 
     /**

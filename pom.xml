@@ -12,7 +12,7 @@
 
     <groupId>com.xinput</groupId>
     <artifactId>springboot-base</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -193,6 +193,18 @@
 
     <!-- 项目构建 -->
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>com/precisource/util/mime-types.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -205,5 +217,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Maven私服 -->
+    <distributionManagement>
+        <repository>
+            <id>pgxcloud-releases</id>
+            <name>Pgxcloud Release Repository</name>
+            <url>http://repository.pgxcloud.com/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>pgxcloud-snapshots</id>
+            <name>Pgxcloud Snapshot Repository</name>
+            <url>http://repository.pgxcloud.com/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
