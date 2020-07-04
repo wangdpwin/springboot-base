@@ -5,15 +5,15 @@
     <parent>
         <groupId>com.xinput</groupId>
         <artifactId>xinput-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath></relativePath>
+        <version>1.1.0</version>
+        <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.xinput</groupId>
     <artifactId>springboot-base</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>

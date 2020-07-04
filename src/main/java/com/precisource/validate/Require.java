@@ -2,7 +2,11 @@ package com.precisource.validate;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 验证参数不能为空，且不允许为空字符串
@@ -16,7 +20,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = RequireCheck.class)
 public @interface Require {
 
-    String message() default "params is empty";
+    String message();
 
     Class<?>[] groups() default {};
 

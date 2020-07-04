@@ -12,11 +12,6 @@ import javax.validation.ConstraintValidatorContext;
 public class GenderCheck implements ConstraintValidator<Gender, Object> {
 
     @Override
-    public void initialize(Gender gender) {
-
-    }
-
-    @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value == null || value.toString().length() == 0) {
             return true;

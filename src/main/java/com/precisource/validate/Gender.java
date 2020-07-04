@@ -1,7 +1,12 @@
 package com.precisource.validate;
 
 import javax.validation.Constraint;
-import java.lang.annotation.*;
+import javax.validation.Payload;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author zanxus
@@ -14,5 +19,9 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = GenderCheck.class)
 public @interface Gender {
-    String message() default "validation.belong";
+    String message();
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }
