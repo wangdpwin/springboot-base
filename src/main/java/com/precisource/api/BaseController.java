@@ -140,8 +140,11 @@ public abstract class BaseController {
      * set total count header to 0 and render empty list.
      */
     protected void renderEmptyList() {
-        baseHttpThreadLocal.get().getResponsen().setHeader(HeaderConsts.TOTOL_COUNT_KEY, "0");
-        throw new BaseException(HttpStatus.OK, JsonUtils.toJsonString(Lists.newArrayList()));
+        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
+        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue + StringUtils.COMMA + HeaderConsts.TOTOL_COUNT_KEY);
+        response.setHeader(HeaderConsts.TOTOL_COUNT_KEY, "0");
+        throw new BaseException(HttpStatus.OK, Lists.newArrayList());
     }
 
     /**
@@ -269,7 +272,7 @@ public abstract class BaseController {
      * Send 201 Created
      */
     protected void created(Object data) {
-        created(JsonUtils.toJsonString(data));
+        throw new BaseException(HttpStatus.CREATED, data);
     }
 
     /**

@@ -10,7 +10,7 @@ public class Result {
 
     private Integer code;
 
-    private String message;
+    private Object msg;
 
     public Integer getCode() {
         return code;
@@ -20,24 +20,24 @@ public class Result {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public Object getMessage() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(Object msg) {
+        this.msg = msg;
     }
 
     public void setCodeWithDefaultMsg(int code) {
         this.code = code;
-        this.message = ErrorCode.getMsg(code);
+        this.msg = ErrorCode.getMsg(code);
     }
 
     @Override
     public String toString() {
         return "Result{" +
                 "code=" + code +
-                ", message='" + message + '\'' +
+                ", msg='" + msg + '\'' +
                 '}';
     }
 }

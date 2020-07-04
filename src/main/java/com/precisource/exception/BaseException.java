@@ -14,7 +14,7 @@ public class BaseException extends RuntimeException {
 
     private Integer code;
 
-    private String message;
+    private Object msg;
 
     public BaseException(HttpStatus httpStatus) {
         this.httpStatus = httpStatus;
@@ -23,18 +23,18 @@ public class BaseException extends RuntimeException {
     public BaseException(HttpStatus httpStatus, Integer code) {
         this.httpStatus = httpStatus;
         this.code = code;
-        this.message = super.getMessage();
+        this.msg = super.getMessage();
     }
 
-    public BaseException(HttpStatus httpStatus, String message) {
+    public BaseException(HttpStatus httpStatus, Object message) {
         this.httpStatus = httpStatus;
-        this.message = message;
+        this.msg = message;
     }
 
-    public BaseException(HttpStatus httpStatus, Integer code, String message) {
+    public BaseException(HttpStatus httpStatus, Integer code, Object message) {
         this.httpStatus = httpStatus;
         this.code = code;
-        this.message = message;
+        this.msg = message;
     }
 
     public HttpStatus getHttpStatus() {
@@ -45,8 +45,7 @@ public class BaseException extends RuntimeException {
         return code;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+    public Object getMsg() {
+        return msg;
     }
 }

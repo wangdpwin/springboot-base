@@ -1,6 +1,5 @@
 package com.precisource.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
@@ -10,10 +9,8 @@ public class BaseMongoModel {
     @Id
     private String id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createAt = new Date();
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateAt = new Date();
 
     private Integer recordState = 0;

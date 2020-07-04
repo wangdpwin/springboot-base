@@ -11,7 +11,7 @@ public class BaseCondition {
     /**
      * 关键字查询
      */
-    private String keyworkds;
+    private String keywords;
 
     /**
      * 偏移量
@@ -23,12 +23,12 @@ public class BaseCondition {
      */
     private Integer limit;
 
-    public String getKeyworkds() {
-        return keyworkds;
+    public String getKeywords() {
+        return keywords;
     }
 
-    public void setKeyworkds(String keyworkds) {
-        this.keyworkds = keyworkds;
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
 
     public Integer getOffset() {

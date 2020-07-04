@@ -150,21 +150,21 @@ public class GlobalExceptionHandler {
         ResponseEntity responseEntity;
         switch (be.getHttpStatus()) {
             case OK:
-                String message = be.getMessage();
-                if (StringUtils.isNullOrEmpty(message)) {
+                Object msg = be.getMsg();
+                if (msg == null) {
                     responseEntity = ResponseEntity.status(HttpStatus.OK).build();
                 } else {
-                    responseEntity = ResponseEntity.status(HttpStatus.OK).body(be.getMessage());
+                    responseEntity = ResponseEntity.status(HttpStatus.OK).body(be.getMsg());
                 }
                 break;
             case CREATED:
             case NO_CONTENT:
-                responseEntity = ResponseEntity.status(be.getHttpStatus()).body(be.getMessage());
+                responseEntity = ResponseEntity.status(be.getHttpStatus()).body(be.getMsg());
                 break;
             default:
                 Result result = BuilderUtils.of(Result::new)
                         .with(Result::setCode, be.getCode())
-                        .with(Result::setMessage, be.getMessage())
+                        .with(Result::setMessage, be.getMsg())
                         .build();
                 responseEntity = ResponseEntity.status(be.getHttpStatus()).body(result);
                 break;
