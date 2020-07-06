@@ -33,6 +33,11 @@ public class Result {
         this.msg = ErrorCode.getMsg(code);
     }
 
+    public void setCodeMsg(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
     @Override
     public String toString() {
         return "Result{" +
