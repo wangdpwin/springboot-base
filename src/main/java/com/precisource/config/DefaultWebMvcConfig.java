@@ -1,6 +1,7 @@
 package com.precisource.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -18,11 +19,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @Author: xinput
@@ -60,6 +63,11 @@ public class DefaultWebMvcConfig implements WebMvcConfigurer {
         objectMapper.registerModule(simpleModule);
         // 过滤返回值为字段值为null的信息
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        // Date类型日期全局格式化
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        // GMT+8
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 
         converter.setObjectMapper(objectMapper);
 

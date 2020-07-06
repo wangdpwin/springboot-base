@@ -2,16 +2,16 @@ package com.precisource.model;
 
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class BaseMongoModel {
 
     @Id
     private String id;
 
-    private Date createAt = new Date();
+    private LocalDateTime createAt = LocalDateTime.now();
 
-    private Date updateAt = new Date();
+    private LocalDateTime updateAt = LocalDateTime.now();
 
     private Integer recordState = 0;
 
@@ -23,19 +23,19 @@ public class BaseMongoModel {
         this.id = id;
     }
 
-    public Date getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
 
-    public Date getUpdateAt() {
+    public LocalDateTime getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(Date updateAt) {
+    public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
 
