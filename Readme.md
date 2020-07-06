@@ -64,3 +64,5 @@ public class App {
 }
 ```
 
+#### 五、版本主要功能更新
+- **0.0.4** 解决responseEntity返回字符串带引号问题
