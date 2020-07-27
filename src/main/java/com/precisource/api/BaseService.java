@@ -119,14 +119,14 @@ public abstract class BaseService {
     /**
      * 设置图片的信息
      */
-    protected void setImageHeader() {
-        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
-        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
-        // 图片的宽、高、宽高比
-        String appendHeaders = ",X-Image-Width,X-Image-Height,X-Image-Aspect-Ratio";
-        headerValue = headerValue.concat(appendHeaders);
-        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue);
-    }
+//    protected void setImageHeader() {
+//        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+//        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
+//        // 图片的宽、高、宽高比
+//        String appendHeaders = ",X-Image-Width,X-Image-Height,X-Image-Aspect-Ratio";
+//        headerValue = headerValue.concat(appendHeaders);
+//        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue);
+//    }
 
     /**
      * set total count header to 0 and render empty list.

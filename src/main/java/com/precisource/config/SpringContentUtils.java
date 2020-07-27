@@ -1,5 +1,6 @@
 package com.precisource.config;
 
+import com.precisource.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,6 +18,8 @@ import java.util.Locale;
 public class SpringContentUtils implements ApplicationContextAware {
 
     private static ApplicationContext context = null;
+
+    private static String CURRENT_ACTIVE_PROFILE;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -50,6 +53,20 @@ public class SpringContentUtils implements ApplicationContextAware {
      * @return
      */
     public static String getActiveProfile() {
-        return context.getEnvironment().getActiveProfiles()[0];
+        if (StringUtils.isNotNullOrEmpty(CURRENT_ACTIVE_PROFILE)) {
+            return CURRENT_ACTIVE_PROFILE;
+        }
+
+        String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+        if (activeProfiles == null || activeProfiles.length == 0) {
+            CURRENT_ACTIVE_PROFILE = "default";
+        } else {
+            CURRENT_ACTIVE_PROFILE = context.getEnvironment().getActiveProfiles()[0];
+        }
+        return CURRENT_ACTIVE_PROFILE;
+    }
+
+    public static String getId() {
+        return context.getId();
     }
 }

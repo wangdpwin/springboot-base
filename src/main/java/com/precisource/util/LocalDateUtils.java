@@ -1,11 +1,15 @@
 package com.precisource.util;
 
+import com.google.common.collect.Lists;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: xinput
@@ -41,6 +45,47 @@ public class LocalDateUtils {
         return Period.between(localDate1, localDate2).getDays();
     }
 
-    public static void main(String[] args) {
+    public static List<LocalDate> getMiddleLocalDate(LocalDate begin, LocalDate end) {
+        if (end.isBefore(begin)) {
+            return Lists.newArrayList();
+        }
+        List<LocalDate> localDateList = new ArrayList<>();
+        long length = end.toEpochDay() - begin.toEpochDay();
+        for (long i = length; i >= 0; i--) {
+            localDateList.add(end.minusDays(i));
+        }
+        return localDateList;
+    }
+
+    public static boolean isAfter(LocalDate date1, LocalDate date2) {
+        if (date1 == null) {
+            return false;
+        }
+
+        if (date2 == null) {
+            return true;
+        }
+
+        return date1.isAfter(date2);
+    }
+
+    public static boolean isEqual(LocalDate date1, LocalDate date2) {
+        if (date1 == null && date2 == null) {
+            return true;
+        }
+
+        if (date1 != null && date2 != null) {
+            return date1.isEqual(date2);
+        }
+
+        return false;
+    }
+
+    public static Integer calculateAge(LocalDate birthday) {
+        if (birthday == null) {
+            return null;
+        }
+
+        return birthday.until(LocalDate.now()).getYears();
     }
 }

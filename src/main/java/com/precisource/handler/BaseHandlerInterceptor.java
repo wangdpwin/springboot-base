@@ -179,7 +179,9 @@ public class BaseHandlerInterceptor extends HandlerInterceptorAdapter {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // 清空Tomcat创建的大量session对象
         request.getSession().invalidate();
-        baseHttpThreadLocal.remove();
+        if (baseHttpThreadLocal != null) {
+            baseHttpThreadLocal.remove();
+        }
     }
 
     @Override

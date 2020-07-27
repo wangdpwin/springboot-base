@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +29,21 @@ public class CommonUtils {
     }
 
     /**
+     * List<T> ==> List<Field>
+     *
+     * @param collection List<User>
+     * @param predicate  user -> user.getAge()>10,
+     * @param function   User::getName
+     * @return
+     */
+    public static <R, A> List<A> collectColumn(Collection<R> collection, Predicate<R> predicate, Function<R, A> function) {
+        return collection.stream()
+                .filter(predicate)
+                .map(function)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * List<T> ==> List<Field> 去重
      *
      * @param collection List<User>
@@ -36,6 +52,22 @@ public class CommonUtils {
      */
     public static <R, A> List<A> collectDistinctColumn(Collection<R> collection, Function<R, A> function) {
         return collection.stream()
+                .map(function)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * List<T> ==> List<Field> 去重
+     *
+     * @param collection List<User>
+     * @param predicate  -> user.getAge()>10,
+     * @param function   User::getName
+     * @return
+     */
+    public static <R, A> List<A> collectDistinctColumn(Collection<R> collection, Predicate<R> predicate, Function<R, A> function) {
+        return collection.stream()
+                .filter(predicate)
                 .map(function)
                 .distinct()
                 .collect(Collectors.toList());

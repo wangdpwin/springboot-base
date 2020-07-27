@@ -43,7 +43,7 @@ public class JwtUtils {
         return jwt;
     }
 
-    public static Map verify(String jwt) throws SignatureException, NoSuchAlgorithmException, JWTVerifyException, InvalidKeyException, IOException {
+    public static Map<String, Object> verify(String jwt) throws SignatureException, NoSuchAlgorithmException, JWTVerifyException, InvalidKeyException, IOException {
         final JWTVerifier verifier = new JWTVerifier(DefaultConfig.getApiSecureKey());
         final Map<String, Object> claims = verifier.verify(jwt);
         return claims;

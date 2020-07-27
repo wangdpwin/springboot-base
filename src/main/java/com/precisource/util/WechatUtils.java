@@ -1,5 +1,6 @@
 package com.precisource.util;
 
+import com.precisource.config.DefaultConfig;
 import com.precisource.domain.WechatUserInfo;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
@@ -21,8 +22,7 @@ public class WechatUtils {
     private static String wxUrl = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=#{3}";
 
     public static WechatUserInfo code2Session(String code) {
-//        String requestUrl = MessageFormat.format(wxUrl, DefaultConfig.getWechatAppid(), DefaultConfig.getWechatSecret(), code, "authorization_code");
-        String requestUrl = MessageFormat.format(wxUrl, "wx76ae1a2d73004c40", "c416543027b9449d27955ef663509f3a", code, "authorization_code");
+        String requestUrl = MessageFormat.format(wxUrl, DefaultConfig.getWechatAppid(), DefaultConfig.getWechatSecret(), code, "authorization_code");
 
         WechatUserInfo authInfo = null;
         try {

@@ -1,5 +1,7 @@
 package com.precisource.validate;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Collection;
@@ -21,7 +23,8 @@ public class RequireCheck implements ConstraintValidator<Require, Object> {
         }
 
         if (value instanceof Collection<?>) {
-            return ((Collection<?>) value).size() > 0;
+            return CollectionUtils.isNotEmpty(((Collection<?>) value));
+//            return ((Collection<?>) value).size() > 0;
         }
 
         if (value.getClass().isArray()) {

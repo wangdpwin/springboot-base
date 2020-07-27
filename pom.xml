@@ -13,7 +13,8 @@
 
     <groupId>com.xinput</groupId>
     <artifactId>springboot-base</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
+    <!--    <version>0.0.5-SNAPSHOT</version>-->
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>

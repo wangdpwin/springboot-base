@@ -50,14 +50,6 @@ public abstract class BaseController {
     private ThreadLocal<BaseHttp> baseHttpThreadLocal;
 
     /**
-     * 线程安全初始化 request，respose对象
-     */
-//    @ModelAttribute
-//    public void initReqAndRep(HttpServletResponse response) {
-//        currentResponse.set(response);
-//    }
-
-    /**
      * get user id in jwt token.
      *
      * @return
@@ -127,14 +119,14 @@ public abstract class BaseController {
     /**
      * 设置图片的信息
      */
-    protected void setImageHeader() {
-        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
-        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
-        // 图片的宽、高、宽高比
-        String appendHeaders = ",X-Image-Width,X-Image-Height,X-Image-Aspect-Ratio";
-        headerValue = headerValue.concat(appendHeaders);
-        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue);
-    }
+//    protected void setImageHeader() {
+//        HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
+//        String headerValue = response.getHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY);
+//        // 图片的宽、高、宽高比
+//        String appendHeaders = ",X-Image-Width,X-Image-Height,X-Image-Aspect-Ratio";
+//        headerValue = headerValue.concat(appendHeaders);
+//        response.setHeader(HeaderConsts.ACCESS_CONTROL_EXPOSE_HEADERS_KEY, headerValue);
+//    }
 
     /**
      * set total count header to 0 and render empty list.
@@ -299,7 +291,7 @@ public abstract class BaseController {
         HttpServletResponse response = baseHttpThreadLocal.get().getResponsen();
         response.setHeader("Location", url);
         try {
-            response.sendRedirect("url");
+            response.sendRedirect(url);
         } catch (IOException e) {
             Map<String, Object> map = Maps.newHashMap();
             map.put("url", url);
